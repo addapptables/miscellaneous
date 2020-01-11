@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es6"
+  },
+  "include": [],
+  "exclude": [
+    "node_modules",
+    "src/**/*.spec.ts"
+  ]
+}

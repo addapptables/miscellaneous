@@ -1,0 +1,33 @@
+{
+  "name": "@addapptables/microservice",
+  "version": "0.0.0",
+  "description": "addapptables microservice",
+  "author": "development@addapptables.com",
+  "homepage": "https://github.com/addapptables/miscellaneous#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint -p tsconfig.json -c ../../tslint.json"
+  },
+  "keywords": [
+    "addapptables",
+    "microservice"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/addapptables/miscellaneous.git"
+  },
+  "bugs": {
+    "url": "https://github.com/addapptables/miscellaneous/issues"
+  },
+  "dependencies": {
+    "@nestjs/common": "^6.10.14",
+    "@nestjs/core": "^6.10.14",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.5.4"
+  }
+}
