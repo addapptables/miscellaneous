@@ -1,52 +1,52 @@
-// import { Test } from '@nestjs/testing';
-// import * as chai from 'chai';
-// import * as sinon from 'sinon';
+import { Test } from '@nestjs/testing';
 
-// import { CqrsModule, CommandBus, LocalBusAdapter } from './';
-// import { TestCommand } from './utils/_test/command';
-// import { TestCommandHandler } from './utils/_test/command-handler';
 
-// describe('command bus', () => {
-//   let _module;
-//   let commandBus: CommandBus;
+import { RabbitMQBusAdapter, MicroserviceModule } from './';
+import { TestCommandHandler } from './utils/_test/command-handler';
+import { HandlerTypes } from './enums/handler-types.enum';
 
-//   before(async () => {
-//     _module = await Test.createTestingModule({
-//       imports: [CqrsModule],
-//       providers: [TestCommandHandler],
-//     }).compile();
+describe.only('command bus', () => {
+  let _module;
 
-//     await _module
-//       .get(CqrsModule)
-//       .onModuleInit();
+  before(async () => {
+    _module = await Test.createTestingModule({
+      imports: [
+        MicroserviceModule.withConfig({
+          type: HandlerTypes.ALL,
+          adapter: new RabbitMQBusAdapter('test', 'amqp://local:password@0.0.0.0?heartbeat=30', 'test-service'),
+          // adapter: null,
+        }, [TestCommandHandler]),
+      ],
+      providers: [],
+    }).compile();
 
-//     commandBus = _module.get(CommandBus);
+    await _module
+      .get(MicroserviceModule)
+      .onModuleInit();
+  });
 
-//     await commandBus
-//       .setAdapter(new LocalBusAdapter())
-//       .init();
-//   });
+  it('should identify command handle registered', () => {
+    // const commandBus = _module.get(CommandBus);
+    // const handleTarget = commandBus.handlers.get(TestCommand.name);
 
-//   it('should identify command handle registered', () => {
-//     const commandBus = _module.get(CommandBus);
-//     const handleTarget = commandBus.handlers.get(TestCommand.name);
+    // chai.expect(handleTarget.constructor.name).to.be.equal(TestCommandHandler.name);
+  });
 
-//     chai.expect(handleTarget.constructor.name).to.be.equal(TestCommandHandler.name);
-//   });
+  // it('should identify adapter handle registered', () => {
+  //   const commandBus = _module.get(CommandBus);
 
-//   it('should identify adapter handle registered', () => {
-//     const commandBus = _module.get(CommandBus);
+  //   chai.expect(commandBus.adapter.constructor.name).to.be.equal(LocalBusAdapter.name);
+  // });
 
-//     chai.expect(commandBus.adapter.constructor.name).to.be.equal(LocalBusAdapter.name);
-//   });
+  // it('should publish a command', () => {
+  //   const testCommandData: TestCommand = new TestCommand({ id: '12345', name: 'Test' });
+  //   const testCommandHandler = _module.get(TestCommandHandler);
 
-//   it('should publish a command', () => {
-//     const testCommandData: TestCommand = new TestCommand({ id: '12345', name: 'Test' });
-//     const testCommandHandler = _module.get(TestCommandHandler);
+  //   sinon.stub(testCommandHandler, 'handle')
+  //     .callsFake(command => chai.expect(command).to.be.equals(testCommandData));
 
-//     sinon.stub(testCommandHandler, 'handle')
-//       .callsFake(command => chai.expect(command).to.be.equals(testCommandData));
+  //   commandBus.publish(testCommandData);
+  // });
 
-//     commandBus.publish(testCommandData);
-//   });
-// });
+
+});

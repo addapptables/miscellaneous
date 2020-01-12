@@ -3,10 +3,16 @@ import { TypeHandler } from './types';
 import { MicroserviceOptions } from './interfaces/microservice-options.interface';
 import { InitializeMicroservice } from './services/initialize-microservice.service';
 import { CONFIG_PROVIDER_TOKEN } from './config/constants.config';
+import { CommandBus } from './command-bus';
+import { EventBus } from './event-bus';
+import { ExplorerService } from './services/explore.service';
 
 @Module({
   providers: [
     InitializeMicroservice,
+    CommandBus,
+    EventBus,
+    ExplorerService,
   ],
   exports: [],
 })

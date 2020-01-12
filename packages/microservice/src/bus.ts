@@ -59,8 +59,9 @@ export abstract class Bus {
     }
 
     const target = this.reflectName(handler);
+    const targetInstance = new target(<any>{ name: 'Teo' }, 'ce8e1bc8-c053-4d83-b504-c5b9aeaf8d23');
 
-    this.adapter.subscribe(instance, <any>target);
+    this.adapter.subscribe(instance, <any>targetInstance);
   };
 
 }

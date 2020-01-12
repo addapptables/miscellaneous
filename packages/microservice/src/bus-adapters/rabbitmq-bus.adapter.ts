@@ -1,4 +1,4 @@
-import { rabbitmqCreateBus as createBus } from '@kerthin/bus';
+import { rabbitmqCreateBus as createBus, IBus } from '@addapptables/bus';
 import { IBusAdapter, IOnInitAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { ICommand } from '../interfaces/commands/command.interface';
 import { ICommandDto } from '../interfaces/commands/command-dto-interface';
@@ -7,8 +7,7 @@ import { IEventDto } from '../interfaces/events/event-dto.interface';
 import { Handler } from '../types';
 
 export class RabbitMQBusAdapter implements IBusAdapter, IOnInitAdapter {
-  private bus: any;
-  private handlers: Map<string, Handler> = new Map<string, Handler>();
+  private bus: IBus;
 
   constructor(
     private readonly exchange: string,
@@ -16,19 +15,12 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInitAdapter {
     private readonly service: string
   ) { }
 
-  setHandlers(handlers: Map<string, Handler>): this {
-    this.handlers = handlers;
-    return this;
-  }
-
   async onInit(): Promise<void> {
     const exchange = this.exchange;
     const host = this.host;
     const service = this.service;
 
     this.bus = await createBus({ exchange, host, service });
-
-    this.handlers.forEach(this.subscribe.bind(this));
   }
 
   publish(data: ICommand<ICommandDto> | IEvent<IEventDto>): any {
@@ -38,6 +30,8 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInitAdapter {
   }
 
   subscribe(handler: any, metadata?: any): void {
+    console.log('metadata', metadata);
+
     const handle = (msg, ack, nack) => {
       // TODO: this should be validate appropriately
       try {
