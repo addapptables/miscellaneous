@@ -1,0 +1,36 @@
+{
+  "name": "@addapptables/bus",
+  "version": "0.0.0",
+  "description": "addapptables bus",
+  "author": "develop@addapptables.com",
+  "homepage": "https://github.com/addapptables/miscellaneous#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint -p tsconfig.json -c ../../tslint.json"
+  },
+  "keywords": [
+    "addapptables",
+    "bus"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/addapptables/miscellaneous.git"
+  },
+  "bugs": {
+    "url": "https://github.com/addapptables/miscellaneous/issues"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "ramda": "^0.26.1",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.5.13",
+    "@types/bluebird": "^3.5.29"
+  }
+}
