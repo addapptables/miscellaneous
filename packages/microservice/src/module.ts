@@ -1,42 +1,28 @@
 import { Module, OnModuleInit, DynamicModule } from '@nestjs/common';
-
-// TODO: facade to the view WOOOOWww change it
-import { FacadeChangeName } from './services/facade-changename.service';
-import { IBusAdapter } from './interfaces/bus/bus-adapter.interface';
 import { TypeHandler } from './types';
-
-export enum Types {
-  COMMAND = 'command',
-  EVENT = 'event',
-  QUERY = 'query',
-  ALL = '*',
-}
-
-export type ModuleConfig = {
-  type: Types;
-  adapter: IBusAdapter;
-};
-
+import { MicroserviceOptions } from './interfaces/microservice-options.interface';
+import { InitializeMicroservice } from './services/initialize-microservice.service';
+import { CONFIG_PROVIDER_TOKEN } from './config/constants.config';
 
 @Module({
   providers: [
-    FacadeChangeName,
+    InitializeMicroservice,
   ],
   exports: [],
 })
 export class MicroserviceModule implements OnModuleInit {
 
   constructor(
-    private readonly facadeChangeName: FacadeChangeName
+    private readonly initializeMicroservice: InitializeMicroservice
   ) { }
 
   // TODO: refactor this code
-  static withConfig(config: ModuleConfig | ModuleConfig[], handlers?: TypeHandler[]): DynamicModule {
+  static withConfig(config: MicroserviceOptions | MicroserviceOptions[], handlers?: TypeHandler[]): DynamicModule {
     // TODO: control when one config just comes
     const configTransformed = Array.isArray(config) ? config : [config];
 
     const configProvider = {
-      provide: 'ConfigProvider',
+      provide: CONFIG_PROVIDER_TOKEN,
       useValue: configTransformed,
     };
 
@@ -54,7 +40,7 @@ export class MicroserviceModule implements OnModuleInit {
   }
 
   async onModuleInit() {
-    await this.facadeChangeName.init();
+    await this.initializeMicroservice.init();
   }
 
 }

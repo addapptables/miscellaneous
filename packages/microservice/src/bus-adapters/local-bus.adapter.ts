@@ -10,14 +10,6 @@ export class LocalBusAdapter implements IBusAdapter {
 
   private handlers: Map<string, Handler> = new Map<string, Handler>();
 
-  setHandlers(handlers: Map<string, Handler>): this {
-    this.handlers = handlers;
-    return this;
-  }
-
-  // tslint:disable-next-line:no-empty
-  init(): void { }
-
   publish(data: ICommand<ICommandDto> | IEvent<IEventDto>): any {
     const handler = this.handlers.get(getPrototypeName(data)) as Handler;
 

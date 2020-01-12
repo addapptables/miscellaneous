@@ -1,18 +1,24 @@
 import { ModuleRef } from '@nestjs/core';
-
-import { Handler, TypeHandler } from './types';
+import { TypeHandler } from './types';
 import { ICommand } from './interfaces/commands/command.interface';
 import { IEvent } from './interfaces/events/event.interface';
 import { ICommandDto } from './interfaces/commands/command-dto-interface';
 import { IEventDto } from './interfaces/events/event-dto.interface';
-import { IBusAdapter } from './interfaces/bus/bus-adapter.interface';
+import { IBusAdapter, IOnInitAdapter } from './interfaces/bus/bus-adapter.interface';
+import { MicroserviceOptions } from './interfaces/microservice-options.interface';
+import { CONFIG_PROVIDER_TOKEN } from './config/constants.config';
+import { HandlerTypes } from './enums/handler-types.enum';
 
 // TODO: implement adapter steps
 export abstract class Bus {
 
   protected adapter: IBusAdapter;
 
-  constructor(protected readonly moduleRef: ModuleRef) { }
+  protected readonly configProvider: MicroserviceOptions[]
+
+  constructor(protected readonly moduleRef: ModuleRef) {
+    this.configProvider = this.moduleRef.get(CONFIG_PROVIDER_TOKEN);
+  }
 
   abstract publish(data: ICommand<ICommandDto> | IEvent<IEventDto>): any;
 
@@ -20,11 +26,29 @@ export abstract class Bus {
 
   protected abstract reflectName(handler: TypeHandler): FunctionConstructor;
 
-  protected abstract resolveAdapter(): void;
+  protected abstract get getHandlerTypeType(): HandlerTypes;
 
   async init(): Promise<void> {
     await this.resolveAdapter();
     await this.registerHandlers();
+  }
+
+  protected async resolveAdapter(): Promise<void> {
+    const adapterConfig = this.configProvider.find(config => [this.getHandlerTypeType, HandlerTypes.ALL].includes(config.type));
+
+    if (!adapterConfig) {
+      // TODO: create an exception class
+      throw new Error(`The Bus Adapter was not configure for the ${this.getHandlerTypeType}.`);
+    }
+
+    // TODO: figure out the best way to set the adapter
+    this.adapter = adapterConfig.adapter;
+
+    // TODO: figure out what is the best way
+    if (typeof this.adapter[IOnInitAdapter] === 'function') {
+      await this.adapter[IOnInitAdapter]();
+    }
+
   }
 
   protected registerHandler = (handler: TypeHandler): void => {

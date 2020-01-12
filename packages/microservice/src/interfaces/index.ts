@@ -11,3 +11,4 @@ export { IEvent } from './events/event.interface';
 export { IBusAdapter } from './bus/bus-adapter.interface';
 
 export { IHandler } from './handler.interface';
+export * from './microservice-options.interface';

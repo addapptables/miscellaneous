@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
-
-import { ExplorerService } from './explore.service';
 import { CommandBus } from '../command-bus';
 import { EventBus } from '../event-bus';
 
 @Injectable()
-export class FacadeChangeName {
+export class InitializeMicroservice {
 
   constructor(
     private readonly eventsBus: EventBus,

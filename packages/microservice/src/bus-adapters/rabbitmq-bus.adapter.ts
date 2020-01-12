@@ -1,5 +1,4 @@
 import { rabbitmqCreateBus as createBus } from '@kerthin/bus';
-
 import { IBusAdapter, IOnInitAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { ICommand } from '../interfaces/commands/command.interface';
 import { ICommandDto } from '../interfaces/commands/command-dto-interface';
