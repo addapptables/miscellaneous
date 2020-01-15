@@ -42,7 +42,8 @@ export abstract class Bus {
     }
 
     // TODO: figure out the best way to set the adapter
-    this.adapter = adapterConfig.adapter;
+    const AdapterPrototype = adapterConfig.adapter.adapterPrototype;
+    this.adapter = new AdapterPrototype(adapterConfig.adapter.adapterConfig);
 
     // TODO: figure out what is the best way
     if (typeof this.adapter[IOnInitAdapter] === 'function') {

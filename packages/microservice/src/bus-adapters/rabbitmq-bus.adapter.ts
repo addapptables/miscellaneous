@@ -4,23 +4,16 @@ import { ICommand } from '../interfaces/commands/command.interface';
 import { ICommandDto } from '../interfaces/commands/command-dto-interface';
 import { IEvent } from '../interfaces/events/event.interface';
 import { IEventDto } from '../interfaces/events/event-dto.interface';
-import { Handler } from '../types';
 
 export class RabbitMQBusAdapter implements IBusAdapter, IOnInitAdapter {
   private bus: IBus;
 
-  constructor(
-    private readonly exchange: string,
-    private readonly host: string,
-    private readonly service: string
-  ) { }
+  constructor(public readonly options: any) { }
+
+
 
   async onInit(): Promise<void> {
-    const exchange = this.exchange;
-    const host = this.host;
-    const service = this.service;
-
-    this.bus = await createBus({ exchange, host, service });
+    this.bus = await createBus(this.options);
   }
 
   publish(data: ICommand<ICommandDto> | IEvent<IEventDto>): any {
