@@ -1,18 +1,20 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as uuid from 'uuid/v4';
 import { CONFIG_PROVIDER_TOKEN } from '../config/constants.config';
 import { MicroserviceOptions, IBusAdapter, IHandler } from '../interfaces';
 import { IOnInitAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { Command } from '../command';
+import { Event } from '../event';
 import { HandlerTypes } from '../enums/handler-types.enum';
+import { ExplorerService } from './explore.service';
 
-interface ISagaAdd<T> {
+interface ISagaAdd {
   // add(): ISagaAdd<T>;
-  end(): Promise<T>;
+  end<T = any>(): Promise<T>;
 }
 
-interface ISagaStart<T> {
-  add(): ISagaAdd<T>;
+interface ISagaStart {
+  add(data: any): ISagaAdd;
 }
 
 interface ISagaProcess {
@@ -27,7 +29,7 @@ interface ISagaInstance {
 }
 
 
-class SagaProcess {
+class SagaProcess implements ISagaStart, ISagaAdd {
 
   private readonly cid: string;
   private data: any;
@@ -36,11 +38,13 @@ class SagaProcess {
     this.cid = uuid();
   }
 
-  add(data: any) {
+  add(data: any): ISagaAdd {
     this.data = data;
+
+    return this;
   }
 
-  end() {
+  end<T = any>(): Promise<T> {
     return new Promise((resolve, reject) => {
       this.saga.sagas[this.cid] = {
         handle: (data: any) => {
@@ -57,18 +61,16 @@ class SagaProcess {
         adapter.adapter.publish(data);
       }
       if (this.data instanceof Event) {
-        const adapter = this.saga.adapters.find(adapter => adapter.type === HandlerTypes.COMMAND);
+        const adapter = this.saga.adapters.find(adapter => adapter.type === HandlerTypes.EVENT);
         adapter.adapter.publish(data);
       }
     });
   }
 
-  private getBusAdapter(handlerTypes: HandlerTypes) {
-    this.saga.adapters.find((adapter) => { adapter })
-  }
 }
 
-
+// TODO: add typigin to this class
+@Injectable()
 export class Saga {
 
   public adapters: ISagaInstance[] = [];
@@ -76,7 +78,8 @@ export class Saga {
 
   constructor(
     @Inject(CONFIG_PROVIDER_TOKEN)
-    private readonly microserviceOptions: MicroserviceOptions[]
+    private readonly microserviceOptions: MicroserviceOptions[],
+    private readonly explorerService: ExplorerService
   ) { }
 
   onInit() {
@@ -93,65 +96,33 @@ export class Saga {
         type: option.type,
       });
 
-      adapterInstance.subscribe({ handle: this.subscribe });
+      let metadata;
+      if (option.type === HandlerTypes.COMMAND) {
+        metadata = this.explorerService.getCommands().map(command => new command());
+      }
+      if (option.type === HandlerTypes.EVENT) {
+        metadata = this.explorerService.getEvents().map(event => new event());
+      }
+
+      await adapterInstance.subscribeAll(this.subscribe, metadata);
     });
 
   }
 
-  // TODO: create typing for this variable
-  private subscribe = (data: any) => {
+  // TODO: make a wrap for this arguments
+  private subscribe = async (data: any) => {
     if (!this.sagas[data.cid]) {
       return;
     }
 
-    this.sagas[data.cid].handle(data);
+    await this.sagas[data.cid].handle(data);
     delete this.sagas[data.cid];
   }
 
-  start<T>(): ISagaStart<T> {
-
-
-    const sagaProcess = new SagaProcess();
+  start(): ISagaStart {
+    const sagaProcess = new SagaProcess(this);
 
     return sagaProcess;
-
-    const saga = {
-
-      add(foo) {
-        foos.push(foo);
-      },
-
-      end() {
-
-        return new Promise((resolve, reject) => {
-
-          this.process[cid] = {
-            handle: (data) => {
-              try {
-                resolve(data);
-              } catch (error) {
-                reject(error);
-              }
-            },
-          };
-
-          foos.forEach((foo) => {
-            adapter.publish({ correlationId, ...foo }));
-        })
-
-
-      });
-
-
-  },
-}
-
-return {
-  add(): any { },
-};
   }
 
-
 }
-
-

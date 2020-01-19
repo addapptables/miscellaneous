@@ -23,11 +23,11 @@ export class CommandBus extends Bus {
   }
 
   protected registerHandlers(): void {
-    const handlers = this.explorerService.getCommands();
+    const handlers = this.explorerService.getCommandHandlers();
     handlers.forEach(this.registerHandler);
   }
 
-  protected get getHandlerTypeType() {
+  protected get handlerType() {
     return HandlerTypes.COMMAND;
   }
 

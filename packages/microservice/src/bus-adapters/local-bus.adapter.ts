@@ -22,6 +22,8 @@ export class LocalBusAdapter implements IBusAdapter {
     return handler.handle(data);
   }
 
-  subscribe(data: any): void { }
+  async subscribe(data: any): Promise<void> { }
+
+  async subscribeAll(handle: Function, metadata: any[]): Promise<void> { }
 
 }

@@ -1,9 +1,9 @@
 import { Test } from '@nestjs/testing';
 
 
-import { RabbitMQBusAdapter, MicroserviceModule } from './';
-import { TestCommandHandler } from './utils/_test/command-handler';
-import { HandlerTypes } from './enums/handler-types.enum';
+import { RabbitMQBusAdapter, MicroserviceModule } from '../src';
+import { TestCommandHandler } from '../src/utils/_test/command-handler';
+import { HandlerTypes } from '../src/enums/handler-types.enum';
 
 describe.only('command bus', () => {
   let _module;

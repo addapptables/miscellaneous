@@ -11,3 +11,5 @@ export * from './decorators';
 export * from './interfaces';
 export * from './bus-adapters';
 export * from './types';
+export * from './enums';
+export * from './services/saga.service';

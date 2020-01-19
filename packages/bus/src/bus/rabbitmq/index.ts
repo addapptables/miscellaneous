@@ -6,6 +6,8 @@ import { subscriber } from './subscriber';
 import { publisher } from './publisher';
 import { send } from './send';
 
+export * from './subscribeAll';
+
 const connection = async (host): Promise<amqp.Connection> => await amqp.connect(host);
 
 const createChannels = (connection: amqp.Connection) => Promise.all([
@@ -21,6 +23,7 @@ export const createBus = (opts: IBusRabbitMQOptions): Promise<IBus> => connectio
         publish: publisher(pubChannel, opts),
         subscribe: subscriber(subChannel, opts),
         send: send(subChannel, opts),
+        getConnection: () => connection,
         close: closeConnection(connection),
     }));
 

@@ -8,6 +8,7 @@ import { IBusAdapter, IOnInitAdapter } from './interfaces/bus/bus-adapter.interf
 import { MicroserviceOptions } from './interfaces/microservice-options.interface';
 import { CONFIG_PROVIDER_TOKEN } from './config/constants.config';
 import { HandlerTypes } from './enums/handler-types.enum';
+import { IHandler } from './interfaces';
 
 // TODO: implement adapter steps
 export abstract class Bus {
@@ -26,7 +27,7 @@ export abstract class Bus {
 
   protected abstract reflectName(handler: TypeHandler): FunctionConstructor;
 
-  protected abstract get getHandlerTypeType(): HandlerTypes;
+  protected abstract get handlerType(): HandlerTypes;
 
   async init(): Promise<void> {
     await this.resolveAdapter();
@@ -34,11 +35,11 @@ export abstract class Bus {
   }
 
   protected async resolveAdapter(): Promise<void> {
-    const adapterConfig = this.configProvider.find(config => [this.getHandlerTypeType, HandlerTypes.ALL].includes(config.type));
+    const adapterConfig = this.configProvider.find(config => [this.handlerType, HandlerTypes.ALL].includes(config.type));
 
     if (!adapterConfig) {
       // TODO: create an exception class
-      throw new Error(`The Bus Adapter was not configure for the ${this.getHandlerTypeType}.`);
+      throw new Error(`The Bus Adapter was not configure for the ${this.handlerType}.`);
     }
 
     // TODO: figure out the best way to set the adapter
@@ -53,16 +54,17 @@ export abstract class Bus {
   }
 
   protected registerHandler = (handler: TypeHandler): void => {
-    const instance: TypeHandler = this.moduleRef.get(handler, { strict: false });
+    const instance: IHandler = this.moduleRef.get(handler, { strict: false });
 
     if (!instance) {
       return;
     }
 
+    // TODO: create interface generic for ICommand and IEvent
     const target = this.reflectName(handler);
-    const targetInstance = new target(<any>{ name: 'Teo' }, 'ce8e1bc8-c053-4d83-b504-c5b9aeaf8d23');
+    const metadata = new target();
 
-    this.adapter.subscribe(instance, <any>targetInstance);
+    this.adapter.subscribe(instance, <any>metadata);
   };
 
 }

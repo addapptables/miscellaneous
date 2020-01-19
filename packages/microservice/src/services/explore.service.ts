@@ -16,7 +16,7 @@ export class ExplorerService {
 
   constructor(private readonly modulesContainer: ModulesContainer) { }
 
-  getCommands(): Type<ICommandHandler<ICommand<ICommandDto>>>[] {
+  getCommandHandlers(): Type<ICommandHandler<ICommand<ICommandDto>>>[] {
     const modules = [...this.modulesContainer.values()];
     const commands = this.flatMap<ICommandHandler<ICommand<ICommandDto>>>(modules, instance =>
       this.filterProvider(instance, COMMAND_HANDLER_METADATA)
@@ -24,12 +24,22 @@ export class ExplorerService {
     return commands;
   }
 
-  getEvents(): Type<IEventHandler<IEvent<IEventDto>>>[] {
+  getEventHandlers(): Type<IEventHandler<IEvent<IEventDto>>>[] {
     const modules = [...this.modulesContainer.values()];
     const events = this.flatMap<IEventHandler<IEvent<IEventDto>>>(modules, instance =>
       this.filterProvider(instance, EVENT_HANDLER_METADATA)
     );
     return events;
+  }
+
+  getCommands(): Type<ICommand<ICommandDto>>[] {
+    return this.getCommandHandlers()
+      .map(handler => Reflect.getMetadata(COMMAND_HANDLER_METADATA, handler));
+  }
+
+  getEvents(): Type<IEvent<IEventDto>>[] {
+    return this.getEventHandlers()
+      .map(handler => Reflect.getMetadata(EVENT_HANDLER_METADATA, handler));
   }
 
   flatMap<T>(

@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint -p tsconfig.json -c ../../tslint.json",
-    "test": "mocha -r 'src/index.spec.js' src/**/**/*.spec.ts --exit"
+    "test": "mocha -r 'tests/index.spec.js' tests/**/**/*.spec.ts --exit"
   },
   "keywords": [
     "addapptables",
@@ -29,11 +29,13 @@
     "@addapptables/bus": "^0.0.0",
     "@nestjs/common": "^6.10.14",
     "@nestjs/core": "^6.10.14",
+    "bluebird": "^3.7.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.4",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
-    "@nestjs/testing": "^6.10.14"
+    "@nestjs/testing": "^6.10.14",
+    "@types/bluebird": "^3.5.29"
   }
 }

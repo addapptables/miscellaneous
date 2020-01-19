@@ -26,11 +26,11 @@ export class EventBus extends Bus {
   }
 
   protected registerHandlers(): void {
-    const handlers = this.explorerService.getEvents();
+    const handlers = this.explorerService.getEventHandlers();
     handlers.forEach(this.registerHandler);
   }
 
-  protected get getHandlerTypeType() {
+  protected get handlerType() {
     return HandlerTypes.EVENT;
   }
 

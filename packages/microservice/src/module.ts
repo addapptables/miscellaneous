@@ -6,6 +6,7 @@ import { CONFIG_PROVIDER_TOKEN } from './config/constants.config';
 import { CommandBus } from './command-bus';
 import { EventBus } from './event-bus';
 import { ExplorerService } from './services/explore.service';
+import { Saga } from './services/saga.service';
 
 @Module({
   providers: [
@@ -13,8 +14,11 @@ import { ExplorerService } from './services/explore.service';
     CommandBus,
     EventBus,
     ExplorerService,
+    Saga,
   ],
-  exports: [],
+  exports: [
+    Saga,
+  ],
 })
 export class MicroserviceModule implements OnModuleInit {
 
@@ -23,7 +27,7 @@ export class MicroserviceModule implements OnModuleInit {
   ) { }
 
   // TODO: refactor this code
-  static withConfig(config: MicroserviceOptions[], handlers?: TypeHandler[]): DynamicModule {
+  static withConfig(config: MicroserviceOptions | MicroserviceOptions[], handlers?: TypeHandler[]): DynamicModule {
     // TODO: control when one config just comes
     const configTransformed = Array.isArray(config) ? config : [config];
 
@@ -34,7 +38,7 @@ export class MicroserviceModule implements OnModuleInit {
 
     return {
       module: MicroserviceModule,
-      providers: [...handlers, configProvider],
+      providers: [...(handlers || []), configProvider],
     }
   }
 

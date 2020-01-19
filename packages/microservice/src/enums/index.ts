@@ -1,1 +1,1 @@
-export * from './microservice-type.enum';
+export * from './handler-types.enum';
