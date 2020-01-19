@@ -21,6 +21,11 @@ interface ISagaProcess {
   };
 }
 
+interface ISagaInstance {
+  adapter: IBusAdapter;
+  type: HandlerTypes;
+}
+
 
 class SagaProcess {
 
@@ -46,33 +51,27 @@ class SagaProcess {
           }
         },
       };
-
-
-      this.saga.adapters
-
+      const data = { ...this.data, cid: this.cid };
       if (this.data instanceof Command) {
-
+        const adapter = this.saga.adapters.find(adapter => adapter.type === HandlerTypes.COMMAND);
+        adapter.adapter.publish(data);
       }
-
       if (this.data instanceof Event) {
-
+        const adapter = this.saga.adapters.find(adapter => adapter.type === HandlerTypes.COMMAND);
+        adapter.adapter.publish(data);
       }
-
     });
   }
-
 
   private getBusAdapter(handlerTypes: HandlerTypes) {
     this.saga.adapters.find((adapter) => { adapter })
   }
-
-
 }
 
 
 export class Saga {
 
-  public adapters: IBusAdapter[] = [];
+  public adapters: ISagaInstance[] = [];
   public sagas: ISagaProcess = {};
 
   constructor(
@@ -89,7 +88,10 @@ export class Saga {
         await adapterInstance[IOnInitAdapter]();
       }
 
-      this.adapters.push(adapterInstance);
+      this.adapters.push({
+        adapter: adapterInstance,
+        type: option.type,
+      });
 
       adapterInstance.subscribe({ handle: this.subscribe });
     });
