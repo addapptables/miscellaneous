@@ -11,7 +11,6 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInitAdapter {
   constructor(public readonly options: any) { }
 
 
-
   async onInit(): Promise<void> {
     this.bus = await createBus(this.options);
   }

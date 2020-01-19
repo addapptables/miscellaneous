@@ -23,7 +23,7 @@ export class MicroserviceModule implements OnModuleInit {
   ) { }
 
   // TODO: refactor this code
-  static withConfig(config: MicroserviceOptions | MicroserviceOptions[], handlers?: TypeHandler[]): DynamicModule {
+  static withConfig(config: MicroserviceOptions[], handlers?: TypeHandler[]): DynamicModule {
     // TODO: control when one config just comes
     const configTransformed = Array.isArray(config) ? config : [config];
 

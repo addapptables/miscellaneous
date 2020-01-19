@@ -3,6 +3,7 @@ import { IBusAdapter } from '../interfaces';
 
 export interface IManagerAdapterBusWithConfig<T = any> {
   withConfig(config: T): IManagerAdapterBusWithSagaConfig;
+  build(): IAdapterBusConfig;
 }
 
 export interface IManagerAdapterBusWithSagaConfig<T = any> {
