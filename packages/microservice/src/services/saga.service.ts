@@ -1,12 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as uuid from 'uuid/v4';
 import { CONFIG_PROVIDER_TOKEN } from '../config/constants.config';
-import { MicroserviceOptions, IBusAdapter, IHandler } from '../interfaces';
+import { MicroserviceOptions, IBusAdapter } from '../interfaces';
 import { IOnInitAdapter } from '../interfaces/bus/bus-adapter.interface';
-import { Command } from '../command';
-import { Event } from '../event';
-import { HandlerTypes } from '../enums/handler-types.enum';
-import { ExplorerService } from './explore.service';
 
 interface ISagaAdd {
   // add(): ISagaAdd<T>;
@@ -23,12 +19,6 @@ interface ISagaProcess {
   };
 }
 
-interface ISagaInstance {
-  adapter: IBusAdapter;
-  type: HandlerTypes;
-}
-
-
 class SagaProcess implements ISagaStart, ISagaAdd {
 
   private readonly cid: string;
@@ -44,8 +34,9 @@ class SagaProcess implements ISagaStart, ISagaAdd {
     return this;
   }
 
+  // TODO: improve this code
   end<T = any>(): Promise<T> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       this.saga.sagas[this.cid] = {
         handle: (data: any) => {
           try {
@@ -55,58 +46,44 @@ class SagaProcess implements ISagaStart, ISagaAdd {
           }
         },
       };
+
       const data = { ...this.data, cid: this.cid };
-      if (this.data instanceof Command) {
-        const adapter = this.saga.adapters.find(adapter => adapter.type === HandlerTypes.COMMAND);
-        adapter.adapter.publish(data);
-      }
-      if (this.data instanceof Event) {
-        const adapter = this.saga.adapters.find(adapter => adapter.type === HandlerTypes.EVENT);
-        adapter.adapter.publish(data);
-      }
+
+      await this.saga.adapterInstance.publish(data);
     });
   }
 
 }
 
-// TODO: add typigin to this class
+// TODO: add typing to this class
 @Injectable()
 export class Saga {
 
-  public adapters: ISagaInstance[] = [];
+  // TODO: analyze this code SOOOOOOOO IMPORTANTTTTTTTT!!!!!!!!!!
+  public adapterInstance: IBusAdapter;
   public sagas: ISagaProcess = {};
 
   constructor(
     @Inject(CONFIG_PROVIDER_TOKEN)
-    private readonly microserviceOptions: MicroserviceOptions[],
-    private readonly explorerService: ExplorerService
+    private readonly microserviceOptions: MicroserviceOptions
   ) { }
 
-  onInit() {
-    this.microserviceOptions.forEach(async (option) => {
-      const AdapterPrototype = option.adapter.adapterPrototype;
-      const adapterInstance: IBusAdapter = new AdapterPrototype(option.adapter.adapterSagaConfig);
+  async onInit() {
+    const adapterConfig = this.microserviceOptions.adapter;
 
-      if (typeof adapterInstance[IOnInitAdapter] === 'function') {
-        await adapterInstance[IOnInitAdapter]();
-      }
+    const AdapterPrototype = adapterConfig.adapterPrototype;
+    const adapterInstance: IBusAdapter = new AdapterPrototype(adapterConfig.adapterSagaConfig);
 
-      this.adapters.push({
-        adapter: adapterInstance,
-        type: option.type,
-      });
+    if (typeof adapterInstance[IOnInitAdapter] === 'function') {
+      await adapterInstance[IOnInitAdapter]();
+    }
 
-      let metadata;
-      if (option.type === HandlerTypes.COMMAND) {
-        metadata = this.explorerService.getCommands().map(command => new command());
-      }
-      if (option.type === HandlerTypes.EVENT) {
-        metadata = this.explorerService.getEvents().map(event => new event());
-      }
+    // TODO: this has to be in a file
+    const config = { context: 'addapptables-saga', action: 'saga-event', data: null };
+    const options = { service: 'saga' };
+    adapterInstance.subscribe(this.subscribe, config, options);
 
-      await adapterInstance.subscribeAll(this.subscribe, metadata);
-    });
-
+    this.adapterInstance = adapterInstance;
   }
 
   // TODO: make a wrap for this arguments
@@ -115,6 +92,7 @@ export class Saga {
       return;
     }
 
+    // TODO: think if remove the action and context fields
     await this.sagas[data.cid].handle(data);
     delete this.sagas[data.cid];
   }

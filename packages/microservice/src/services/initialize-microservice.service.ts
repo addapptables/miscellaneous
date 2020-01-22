@@ -7,7 +7,7 @@ import { Saga } from './saga.service';
 export class InitializeMicroservice {
 
   constructor(
-    // private readonly eventsBus: EventBus,
+    private readonly eventsBus: EventBus,
     private readonly commandsBus: CommandBus,
     private readonly saga: Saga
   ) { }
@@ -16,7 +16,7 @@ export class InitializeMicroservice {
     await this.commandsBus.init();
     await this.saga.onInit();
     // TODO: apply logic that asks for the config based on that init the buses
-    // await this.eventsBus.init()
+    await this.eventsBus.init()
   }
 
 }

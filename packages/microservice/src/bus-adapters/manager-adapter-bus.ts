@@ -1,5 +1,5 @@
 import { Class } from '../types';
-import { IBusAdapter } from '../interfaces';
+import { IBusAdapter, IEvent, IEventDto } from '../interfaces';
 
 export interface IManagerAdapterBusWithConfig<T = any> {
   withConfig(config: T): IManagerAdapterBusWithSagaConfig;
@@ -8,6 +8,11 @@ export interface IManagerAdapterBusWithConfig<T = any> {
 
 export interface IManagerAdapterBusWithSagaConfig<T = any> {
   withSagaConfig(config: T): IManagerAdapterBusBuild;
+}
+
+export interface IAdapterBusSagaConfig<T = any> {
+  config: T;
+  events: Class<IEvent<IEventDto>>[]
 }
 
 export interface IAdapterBusConfig<T = any> {

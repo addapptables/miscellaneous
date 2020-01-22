@@ -11,7 +11,6 @@ export interface IOnInitAdapter {
 export const IOnInitAdapter: keyof IOnInitAdapter = 'onInit';
 
 export interface IBusAdapter {
-  publish(data: ICommand<ICommandDto> | IEvent<IEventDto>): Promise<any>;
-  subscribe(handle: IHandler<any>, metadata?: ICommand<ICommandDto> | IEvent<IEventDto>): Promise<any>;
-  subscribeAll(handle: Function, metadata: ICommand<ICommandDto>[] | IEvent<IEventDto>[]): Promise<void>;
+  publish(data: ICommand<ICommandDto> | IEvent<IEventDto>, options?: any): Promise<any>;
+  subscribe(handle: Function, metadata?: ICommand<ICommandDto> | IEvent<IEventDto>, options?: any): Promise<any>;
 }

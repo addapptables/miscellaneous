@@ -10,7 +10,8 @@ const subscribeDefault = mergeDeepRight(subscribeOpts);
 export const subscriber = (channel, busOpts) => (action: string, handler: (msg, ack, nack) => void, context?: string, opts?: any): any => {
     opts = or(opts || {});
     const exchange = or(context, busOpts.exchange);
-    const queue = `${busOpts.service}.${exchange}.${action}`;
+    const service = or(opts.service, busOpts.service)
+    const queue = `${service}.${exchange}.${action}`;
     const type = or(opts.type, 'topic');
 
     channel.prefetch(or(opts.prefetch, prefetch));

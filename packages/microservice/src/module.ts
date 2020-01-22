@@ -18,6 +18,7 @@ import { Saga } from './services/saga.service';
   ],
   exports: [
     Saga,
+    EventBus,
   ],
 })
 export class MicroserviceModule implements OnModuleInit {
@@ -27,13 +28,10 @@ export class MicroserviceModule implements OnModuleInit {
   ) { }
 
   // TODO: refactor this code
-  static withConfig(config: MicroserviceOptions | MicroserviceOptions[], handlers?: TypeHandler[]): DynamicModule {
-    // TODO: control when one config just comes
-    const configTransformed = Array.isArray(config) ? config : [config];
-
+  static withConfig(config: MicroserviceOptions, handlers?: TypeHandler[]): DynamicModule {
     const configProvider = {
       provide: CONFIG_PROVIDER_TOKEN,
-      useValue: configTransformed,
+      useValue: config,
     };
 
     return {

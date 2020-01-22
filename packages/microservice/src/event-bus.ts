@@ -7,9 +7,7 @@ import { IEvent } from './interfaces/events/event.interface';
 import { IEventDto } from './interfaces/events/event-dto.interface';
 import { EVENT_HANDLER_METADATA } from './config';
 import { ExplorerService } from './services/explore.service';
-import { MicroserviceOptions } from './interfaces/microservice-options.interface';
-import { HandlerTypes } from './enums/handler-types.enum';
-import { IOnInitAdapter } from './interfaces/bus/bus-adapter.interface';
+import { IHandler } from './interfaces';
 
 @Injectable()
 export class EventBus extends Bus {
@@ -30,12 +28,13 @@ export class EventBus extends Bus {
     handlers.forEach(this.registerHandler);
   }
 
-  protected get handlerType() {
-    return HandlerTypes.EVENT;
-  }
-
   protected reflectName(handler: Type<IEventHandler<IEvent<IEventDto>>>): FunctionConstructor {
     return Reflect.getMetadata(EVENT_HANDLER_METADATA, handler);
+  }
+
+
+  protected subscribe = (handle: IHandler<any>): (data: any) => Promise<any> => async (data: any): Promise<any> => {
+    return handle.handle;
   }
 
 }

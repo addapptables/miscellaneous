@@ -7,7 +7,6 @@ import { IEventDto } from './interfaces/events/event-dto.interface';
 import { IBusAdapter, IOnInitAdapter } from './interfaces/bus/bus-adapter.interface';
 import { MicroserviceOptions } from './interfaces/microservice-options.interface';
 import { CONFIG_PROVIDER_TOKEN } from './config/constants.config';
-import { HandlerTypes } from './enums/handler-types.enum';
 import { IHandler } from './interfaces';
 
 // TODO: implement adapter steps
@@ -15,7 +14,7 @@ export abstract class Bus {
 
   protected adapter: IBusAdapter;
 
-  protected readonly configProvider: MicroserviceOptions[]
+  protected readonly configProvider: MicroserviceOptions
 
   constructor(protected readonly moduleRef: ModuleRef) {
     this.configProvider = this.moduleRef.get(CONFIG_PROVIDER_TOKEN);
@@ -27,7 +26,7 @@ export abstract class Bus {
 
   protected abstract reflectName(handler: TypeHandler): FunctionConstructor;
 
-  protected abstract get handlerType(): HandlerTypes;
+  protected abstract subscribe(handle: IHandler): (data: any) => Promise<any>;
 
   async init(): Promise<void> {
     await this.resolveAdapter();
@@ -35,16 +34,16 @@ export abstract class Bus {
   }
 
   protected async resolveAdapter(): Promise<void> {
-    const adapterConfig = this.configProvider.find(config => [this.handlerType, HandlerTypes.ALL].includes(config.type));
+    const adapterConfig = this.configProvider.adapter;
 
     if (!adapterConfig) {
       // TODO: create an exception class
-      throw new Error(`The Bus Adapter was not configure for the ${this.handlerType}.`);
+      throw new Error('The Bus Adapter was not configure.');
     }
 
     // TODO: figure out the best way to set the adapter
-    const AdapterPrototype = adapterConfig.adapter.adapterPrototype;
-    this.adapter = new AdapterPrototype(adapterConfig.adapter.adapterConfig);
+    const AdapterPrototype = adapterConfig.adapterPrototype;
+    this.adapter = new AdapterPrototype(adapterConfig.adapterConfig);
 
     // TODO: figure out what is the best way
     if (typeof this.adapter[IOnInitAdapter] === 'function') {
@@ -64,7 +63,7 @@ export abstract class Bus {
     const target = this.reflectName(handler);
     const metadata = new target();
 
-    this.adapter.subscribe(instance, <any>metadata);
+    this.adapter.subscribe(this.subscribe(instance), <any>metadata);
   };
 
 }
