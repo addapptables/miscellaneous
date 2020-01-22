@@ -1,12 +1,13 @@
 import { Module, OnModuleInit, DynamicModule } from '@nestjs/common';
-import { TypeHandler } from './types';
 import { MicroserviceOptions } from './interfaces/microservice-options.interface';
 import { InitializeMicroservice } from './services/initialize-microservice.service';
-import { CONFIG_PROVIDER_TOKEN } from './config/constants.config';
+import { MICROSERVICE_CONFIG_PROVIDER } from './config/constants.config';
 import { CommandBus } from './command-bus';
 import { EventBus } from './event-bus';
 import { ExplorerService } from './services/explore.service';
-import { Saga } from './services/saga.service';
+import { SagaService } from './services/saga/saga.service';
+import { IHandler } from './interfaces';
+import { Class } from './types';
 
 @Module({
   providers: [
@@ -14,10 +15,10 @@ import { Saga } from './services/saga.service';
     CommandBus,
     EventBus,
     ExplorerService,
-    Saga,
+    SagaService,
   ],
   exports: [
-    Saga,
+    SagaService,
     EventBus,
   ],
 })
@@ -27,10 +28,9 @@ export class MicroserviceModule implements OnModuleInit {
     private readonly initializeMicroservice: InitializeMicroservice
   ) { }
 
-  // TODO: refactor this code
-  static withConfig(config: MicroserviceOptions, handlers?: TypeHandler[]): DynamicModule {
+  static withConfig(config: MicroserviceOptions, handlers?: Class<IHandler>[]): DynamicModule {
     const configProvider = {
-      provide: CONFIG_PROVIDER_TOKEN,
+      provide: MICROSERVICE_CONFIG_PROVIDER,
       useValue: config,
     };
 
@@ -40,7 +40,7 @@ export class MicroserviceModule implements OnModuleInit {
     }
   }
 
-  static register(handlers: TypeHandler[]): DynamicModule {
+  static register(handlers: Class<IHandler>[]): DynamicModule {
     return {
       module: MicroserviceModule,
       providers: [...handlers],

@@ -7,6 +7,7 @@ import { ICommandDto } from './interfaces/commands/command-dto-interface';
 import { COMMAND_HANDLER_METADATA } from './config';
 import { ExplorerService } from './services/explore.service';
 import { IHandler } from './interfaces';
+import { Class } from './types';
 
 @Injectable()
 export class CommandBus extends Bus {
@@ -27,7 +28,7 @@ export class CommandBus extends Bus {
     handlers.forEach(this.registerHandler);
   }
 
-  protected reflectName(handler: Type<ICommandHandler<ICommand<ICommandDto>>>): FunctionConstructor {
+  protected reflectName(handler: Type<ICommandHandler<ICommand<ICommandDto>>>): Class<ICommand<ICommandDto>> {
     return Reflect.getMetadata(COMMAND_HANDLER_METADATA, handler);
   }
 

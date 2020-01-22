@@ -11,4 +11,4 @@ export * from './decorators';
 export * from './interfaces';
 export * from './bus-adapters';
 export * from './types';
-export * from './services/saga.service';
+export * from './services/saga/saga.service';
