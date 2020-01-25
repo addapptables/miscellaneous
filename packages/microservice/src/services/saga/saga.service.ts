@@ -5,6 +5,7 @@ import { Saga } from './saga';
 import { SagaProcess } from './saga-process';
 import { ITransferData } from '../../interfaces/transfer-data';
 import { TransferDataDto } from '../../interfaces/transfer-data-dto.interface';
+import { InitializeAdapterBus } from '../initialize-adapter-bus.service';
 
 @Injectable()
 export class SagaService implements IOnInit {
@@ -17,13 +18,8 @@ export class SagaService implements IOnInit {
   ) { }
 
   async onInit() {
-    // TODO: Create a class for call life cycles
-    const adapterConfig = this.microserviceOptions.adapter;
-    const AdapterPrototype = adapterConfig.adapterPrototype;
-    const adapterInstance: IBusAdapter = new AdapterPrototype(adapterConfig.adapterSagaConfig);
-    if (typeof adapterInstance[OnInit] === 'function') {
-      await adapterInstance[OnInit]();
-    }
+    const adapterInstance = await (new InitializeAdapterBus(this.microserviceOptions))
+      .init(this.microserviceOptions.adapter.adapterSagaConfig);
     const config = { context: 'addapptables-saga', action: 'saga-event', data: null };
     const options = { service: 'saga' };
     adapterInstance.subscribe(this.subscribe, config, options);

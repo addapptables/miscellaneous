@@ -14,3 +14,4 @@ export { IHandler } from './handler.interface';
 export * from './microservice-options.interface';
 export * from './lifecycles';
 export * from './saga';
+export * from './set-options.interface';

@@ -3,11 +3,13 @@ import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { IOnInit } from '../interfaces/lifecycles';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
+import { ISetOptions } from '../interfaces/set-options.interface';
 
-export class RabbitMQBusAdapter implements IBusAdapter, IOnInit {
+export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
+
   private bus: IBus;
 
-  constructor(public readonly options: any) { }
+  private options: any = {};
 
   async onInit(): Promise<void> {
     this.bus = await createBus(this.options);
@@ -32,6 +34,10 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit {
     };
 
     this.bus.subscribe(data.action, internalHandle, data.context, options);
+  }
+
+  setOptions(options: any): void {
+    this.options = options;
   }
 
 }
