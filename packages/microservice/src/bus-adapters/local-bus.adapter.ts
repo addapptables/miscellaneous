@@ -1,29 +1,43 @@
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
-import { ICommandDto } from '../interfaces/commands/command-dto-interface';
-import { ICommand } from '../interfaces/commands/command.interface';
-import { IEventDto } from '../interfaces/events/event-dto.interface';
-import { IEvent } from '../interfaces/events/event.interface';
-import { IHandler } from '../interfaces';
-import { getPrototypeName } from '../utils';
+import { Subject } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
+import { ITransferData } from '../interfaces/transfer-data';
+import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
+import { Logger } from '@nestjs/common';
 
 export class LocalBusAdapter implements IBusAdapter {
 
-  private handlers: Map<string, IHandler> = new Map<string, IHandler>();
+  private bus: Subject<ITransferData<TransferDataDto>>;
 
-  publish(data: ICommand<ICommandDto> | IEvent<IEventDto>): any {
-    const handler = this.handlers.get(getPrototypeName(data)) as IHandler;
+  private readonly logger: Logger;
 
-    if (!handler) {
-      // TODO: pending add a error handler class
-      // throw new CommandHandlerNotFoundException();
-      throw new Error('The handler is not define.');
-    }
-
-    return handler.handle(data);
+  constructor() {
+    this.bus = new Subject();
+    this.logger = new Logger(LocalBusAdapter.name);
   }
 
-  async subscribe(data: any): Promise<void> { }
+  publish(data: ITransferData<TransferDataDto>): void {
+    this.logger.debug({ ...data, sendData: true }, data.context);
+    this.bus.next(data);
+  }
 
-  close() { }
+  subscribe(handle: Function, data: ITransferData<TransferDataDto>): void {
+    const internalHandle = (msg: ITransferData<TransferDataDto>) => {
+      try {
+        handle(msg);
+        this.logger.debug({ ...msg, receivedData: true }, msg.context);
+      } catch (error) {
+        this.logger.error({ message: error.message, msg }, 'bus-adapter', msg.context);
+      }
+    }
+    this.bus.asObservable().pipe(
+      filter(filter => filter.action === data.action && filter.context === data.context),
+      tap(internalHandle)
+    ).subscribe();
+  }
+
+  close() {
+    this.bus.complete();
+  }
 
 }

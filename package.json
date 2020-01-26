@@ -4,6 +4,7 @@
   "devDependencies": {
     "@nestjs/common": "^6.11.1",
     "@nestjs/core": "^6.11.1",
+    "@types/chai": "4.2.7",
     "@types/mocha": "^5.2.7",
     "bluebird": "^3.7.2",
     "chai": "^4.2.0",
