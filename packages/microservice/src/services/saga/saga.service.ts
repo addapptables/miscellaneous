@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { MICROSERVICE_CONFIG_PROVIDER } from '../../config/constants.config';
 import { MicroserviceOptions, IBusAdapter, IOnInit, OnInit, ISagaStart } from '../../interfaces';
 import { Saga } from './saga';
@@ -8,7 +8,7 @@ import { TransferDataDto } from '../../interfaces/transfer-data-dto.interface';
 import { InitializeAdapterBus } from '../initialize-adapter-bus.service';
 
 @Injectable()
-export class SagaService implements IOnInit {
+export class SagaService implements IOnInit, OnModuleDestroy {
 
   private adapterInstance: IBusAdapter;
 
@@ -40,6 +40,10 @@ export class SagaService implements IOnInit {
     const sagaProcess = new SagaProcess(this.adapterInstance);
 
     return sagaProcess;
+  }
+
+  onModuleDestroy() {
+    this.adapterInstance.close();
   }
 
 }

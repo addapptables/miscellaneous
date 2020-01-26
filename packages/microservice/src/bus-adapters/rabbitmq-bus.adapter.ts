@@ -40,4 +40,8 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
     this.options = options;
   }
 
+  close(): void {
+    this.bus.close();
+  }
+
 }

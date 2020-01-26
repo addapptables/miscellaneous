@@ -24,6 +24,6 @@ export class LocalBusAdapter implements IBusAdapter {
 
   async subscribe(data: any): Promise<void> { }
 
-  async subscribeAll(handle: Function, events: IEvent<IEventDto>[]): Promise<void> { }
+  close() { }
 
 }

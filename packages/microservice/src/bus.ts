@@ -7,8 +7,9 @@ import { IHandler, IOnInit } from './interfaces';
 import { ITransferData } from './interfaces/transfer-data';
 import { TransferDataDto } from './interfaces/transfer-data-dto.interface';
 import { InitializeAdapterBus } from './services/initialize-adapter-bus.service';
+import { OnModuleDestroy } from '@nestjs/common';
 
-export abstract class Bus implements IOnInit {
+export abstract class Bus implements IOnInit, OnModuleDestroy {
 
   protected adapter: IBusAdapter;
 
@@ -50,5 +51,9 @@ export abstract class Bus implements IOnInit {
 
     this.adapter.subscribe(this.subscribe(instance), data);
   };
+
+  onModuleDestroy() {
+    this.adapter.close();
+  }
 
 }
