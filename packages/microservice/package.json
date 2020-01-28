@@ -26,8 +26,10 @@
     "url": "https://github.com/addapptables/miscellaneous/issues"
   },
   "dependencies": {
-    "uuid": "^3.4.0",
-    "@addapptables/bus": "^0.0.0"
+    "@addapptables/bus": "^0.0.0",
+    "@types/ramda": "^0.26.40",
+    "ramda": "^0.26.1",
+    "uuid": "^3.4.0"
   },
   "peerDependencies": {
     "@addapptables/bus": "^0.0.0",

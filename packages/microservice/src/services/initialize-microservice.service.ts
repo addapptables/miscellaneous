@@ -13,8 +13,8 @@ export class InitializeMicroservice {
   ) { }
 
   async init() {
+    await this.eventsBus.onInit();
     await this.commandsBus.onInit();
-    await this.eventsBus.onInit()
     await this.sagaService.onInit();
   }
 
