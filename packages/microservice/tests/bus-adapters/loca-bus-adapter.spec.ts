@@ -16,6 +16,10 @@ describe('local bus adapter', () => {
         localAdapter = new LocalBusAdapter();
     })
 
+    afterEach(() => {
+        localAdapter.close();
+    })
+
     it('Subscribe result should be equal to test-context', (done) => {
         localAdapter.subscribe((result) => {
             chai.expect(result.context).to.be.equal(testData.context);
@@ -63,9 +67,4 @@ describe('local bus adapter', () => {
         }, data);
         localAdapter.publish(data);
     })
-
-    afterEach(() => {
-        localAdapter.close();
-    })
-
 });

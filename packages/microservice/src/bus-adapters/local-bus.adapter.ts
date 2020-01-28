@@ -1,9 +1,9 @@
+import { Logger } from '@nestjs/common';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { Subject } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
-import { Logger } from '@nestjs/common';
 
 export class LocalBusAdapter implements IBusAdapter {
 
@@ -21,10 +21,10 @@ export class LocalBusAdapter implements IBusAdapter {
     this.bus.next(data);
   }
 
-  subscribe(handle: Function, data: ITransferData<TransferDataDto>): void {
-    const internalHandle = (msg: ITransferData<TransferDataDto>) => {
+  async subscribe(handle: Function, data: ITransferData<TransferDataDto>): Promise<void> {
+    const internalHandle = async (msg: ITransferData<TransferDataDto>) => {
       try {
-        handle(msg);
+        await handle(msg);
         this.logger.debug({ ...msg, receivedData: true }, msg.context);
       } catch (error) {
         this.logger.error({ message: error.message, msg }, 'bus-adapter', msg.context);
