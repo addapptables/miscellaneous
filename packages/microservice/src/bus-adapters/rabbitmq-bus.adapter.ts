@@ -22,10 +22,10 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   }
 
   async subscribe(handle: Function, data: ITransferData<TransferDataDto>, options?: any): Promise<void> {
-    const internalHandle = (msg, ack, nack) => {
+    const internalHandle = async (msg, ack, nack) => {
       // TODO: this should be validate appropriately
       try {
-        handle(JSON.parse(msg.content.toString()));
+        await handle(JSON.parse(msg.content.toString()));
         ack();
       } catch (error) {
         console.log('error', error);
