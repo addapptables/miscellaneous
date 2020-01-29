@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
-import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { Subject } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
+import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 
