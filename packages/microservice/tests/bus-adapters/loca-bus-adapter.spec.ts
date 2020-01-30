@@ -1,6 +1,6 @@
+import * as chai from 'chai';
 import { LocalBusAdapter } from '../../src/bus-adapters/local-bus.adapter';
 import { IBusAdapter } from '../../src/interfaces/bus/bus-adapter.interface';
-import * as chai from 'chai';
 
 describe('local bus adapter', () => {
 
@@ -20,51 +20,54 @@ describe('local bus adapter', () => {
         localAdapter.close();
     })
 
-    it('Subscribe result should be equal to test-context', (done) => {
-        localAdapter.subscribe((result) => {
-            chai.expect(result.context).to.be.equal(testData.context);
-            done();
-        }, testData);
-        localAdapter.publish(testData);
-    })
-
-    it('The function subscribe should not execute', (done) => {
-        localAdapter.subscribe(() => {
-            throw 'It should not entry here';
-        }, testData);
-        localAdapter.publish({ ...testData, context: 'other-context' });
-        setTimeout(() => {
-            done();
-        }, 500);
-    })
-
-    it('The function subscribe throw a exception', (done) => {
-        const data = { ...testData, context: 'test-exception' };
-        localAdapter.subscribe(() => {
-            try {
-                throw 'Exception';
-            } catch (error) {
+    describe('Subscribe', () => {
+        it('Should be equal to test-context', (done) => {
+            localAdapter.subscribe((result) => {
+                chai.expect(result.context).to.be.equal(testData.context);
                 done();
-            }
-        }, data);
-        localAdapter.publish(data);
-    })
+            }, testData);
+            localAdapter.publish(testData);
+        })
 
-    it('The function subscribe should be called twice', (done) => {
-        const data = { ...testData, context: 'twice' };
-        let counter = 0;
-        localAdapter.subscribe(() => {
-            counter++;
-            if (counter > 1) {
+        it('Should not execute', (done) => {
+            localAdapter.subscribe(() => {
+                throw 'It should not entry here';
+            }, testData);
+            localAdapter.publish({ ...testData, context: 'other-context' });
+            setTimeout(() => {
                 done();
-            }
-        }, data);
-        localAdapter.subscribe(() => {
-            counter++;
-            if (counter > 1) {
-                done();
-            }
-        }, data);
-        localAdapter.publish(data);
+            }, 500);
+        })
+
+        it('Should throw a exception', (done) => {
+            const data = { ...testData, context: 'test-exception' };
+            localAdapter.subscribe(() => {
+                try {
+                    throw 'Exception';
+                } catch (error) {
+                    chai.expect(error).to.be.equal('Exception');
+                    done();
+                }
+            }, data);
+            localAdapter.publish(data);
+        })
+
+        it('Should be called twice', (done) => {
+            const data = { ...testData, context: 'twice' };
+            let counter = 0;
+            localAdapter.subscribe(() => {
+                counter++;
+                if (counter > 1) {
+                    done();
+                }
+            }, data);
+            localAdapter.subscribe(() => {
+                counter++;
+                if (counter > 1) {
+                    done();
+                }
+            }, data);
+            localAdapter.publish(data);
+        })
     })
 });

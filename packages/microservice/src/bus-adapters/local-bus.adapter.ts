@@ -27,7 +27,7 @@ export class LocalBusAdapter implements IBusAdapter {
         await handle(msg);
         this.logger.debug({ ...msg, receivedData: true }, msg.context);
       } catch (error) {
-        this.logger.error({ message: error.message, msg }, 'bus-adapter', msg.context);
+        this.logger.error({ message: error.message, msg }, LocalBusAdapter.name, msg.context);
       }
     }
     this.bus.asObservable().pipe(
