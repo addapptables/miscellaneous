@@ -7,7 +7,7 @@ import { TransferDataDto } from '../../src/interfaces/transfer-data-dto.interfac
 import { BusConfigException } from '../../src/exceptions';
 
 
-describe.only('Initialize Adapter Bus Service', () => {
+describe('Initialize Adapter Bus Service', () => {
 
   it('should initialize adapter correctly without call life cycle methods', async () => {
     class TestBusAdapter implements IBusAdapter {
