@@ -16,7 +16,7 @@ export class KafkaBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
     private options: any = {};
     private consumer: Consumer;
     private producer: Producer;
-    private handles: Map<string, Function>;
+    private handles: Map<string, Function[]>;
     private readonly logger: Logger;
 
     constructor() {
@@ -62,8 +62,8 @@ export class KafkaBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
     async subscribe(handle: Function, data: ITransferData<TransferDataDto>): Promise<void> {
         const topic = `${data.context}-${data.action}`;
-        data.cid = data.cid || uuid();
-        this.handles.set(data.cid, handle);
+        const handles = this.handles.get(topic) || [];
+        this.handles.set(topic, [...handles, handle]);
         await this.consumer.stop();
         await this.consumer.subscribe({ topic, fromBeginning: true });
         await this.listenMessages();
@@ -71,11 +71,11 @@ export class KafkaBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
     private async listenMessages() {
         await this.consumer.run({
-            eachMessage: async ({ message }) => {
+            eachMessage: async ({ topic, message }) => {
                 const msg = <ITransferData<TransferDataDto>>JSON.parse(message.value.toString());
                 try {
-                    const handle = this.handles.get(msg.cid);
-                    await handle(msg);
+                    const handles = this.handles.get(topic);
+                    handles.forEach(async handle => await handle(msg));
                     this.logger.debug({ ...msg, receivedData: true }, msg.context);
                 } catch (error) {
                     this.logger.error({ message: error.message, msg }, KafkaBusAdapter.name, msg.context);

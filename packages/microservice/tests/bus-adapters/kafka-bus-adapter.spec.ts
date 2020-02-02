@@ -8,6 +8,8 @@ import { Kafka } from './mocks/kafkajs.mock';
 
 describe('kafka bus adapter', function () {
 
+    let sandbox;
+
     const testData = {
         action: 'test-action',
         context: 'test-context',
@@ -19,7 +21,8 @@ describe('kafka bus adapter', function () {
     describe('Subscribe', () => {
 
         before(async () => {
-            sinon.stub(loadPackage, 'loadPackage').returns({ Kafka });
+            sandbox = sinon.createSandbox();
+            sandbox.stub(loadPackage, 'loadPackage').returns({ Kafka });
             const adapter = new KafkaBusAdapter();
             await adapter.onInit();
             kafkaAdapter = adapter;
@@ -27,6 +30,7 @@ describe('kafka bus adapter', function () {
 
         after(async () => {
             await kafkaAdapter.close();
+            sandbox.restore();
         })
 
         it('Should be equal to test-context', () => {
