@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 import { IBusAdapter } from '../../src/interfaces/bus/bus-adapter.interface';
 import * as loadPackage from '../../src/utils/load-package.util';
-import { RedisBusAdapter } from '../../src/bus-adapters/redis-bus-adapter';
+import { RedisBusAdapter } from '../../src/bus-adapters/redis-bus.adapter';
 import { Redis } from './mocks/redis.mock';
 
 describe('redis bus adapter', function () {
