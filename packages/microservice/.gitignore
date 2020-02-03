@@ -3,3 +3,9 @@ node_modules
 *.log
 
 dist
+
+.nyc_output/
+
+coverage
+
+.DS_Store

@@ -33,7 +33,7 @@ export class EventBus extends Bus {
   }
 
   protected subscribe = (handle: IHandler<any>): (data: any) => Promise<any> => async (data: any): Promise<any> => {
-    return handle.handle;
+    return handle.handle(data);
   }
 
 }

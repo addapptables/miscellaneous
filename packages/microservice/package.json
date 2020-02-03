@@ -9,7 +9,9 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint -p tsconfig.json -c ../../tslint.json",
-    "test": "mocha -r 'tests/index.spec.js' tests/**/**/*.spec.ts --exit"
+    "test": "mocha -r 'tests/index.spec.js' tests/**/*.spec.ts",
+    "coverage": "nyc yarn test",
+    "coverage-report": "nyc --reporter=lcov yarn test"
   },
   "keywords": [
     "addapptables",
