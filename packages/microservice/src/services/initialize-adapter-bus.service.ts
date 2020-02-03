@@ -1,3 +1,4 @@
+import { isEmpty, isNil } from 'ramda';
 import { MicroserviceOptions, IBusAdapter, OnInit, SetOptions } from '../interfaces';
 import { BusConfigException } from '../exceptions';
 
@@ -8,16 +9,17 @@ export class InitializeAdapterBus {
   ) { }
 
   // TODO: apply design pattern
-  async init(config: any): Promise<IBusAdapter> {
+  async init(config?: any): Promise<IBusAdapter> {
     const adapterConfig = this.microserviceOptions.adapter;
 
-    if (!adapterConfig) {
+    if (isEmpty(adapterConfig) || isNil(adapterConfig)) {
       throw new BusConfigException('The Bus Adapter was not configured.');
     }
 
     const AdapterPrototype = adapterConfig.adapterPrototype;
 
-    if (!AdapterPrototype) {
+    // TODO: validate prototype is IAdapterBus
+    if (isEmpty(AdapterPrototype) || isNil(AdapterPrototype)) {
       throw new BusConfigException('The Bus Adapter Prototype was not configured.');
     }
 

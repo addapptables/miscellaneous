@@ -48,7 +48,6 @@ export abstract class Bus implements IOnInit, OnModuleDestroy {
 
     const Target = this.reflectName(handler);
     const data = new Target();
-
     this.adapter.subscribe(this.subscribe(instance), data);
   };
 

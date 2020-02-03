@@ -9,7 +9,9 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint -p tsconfig.json -c ../../tslint.json",
-    "test": "mocha -r 'tests/index.spec.js' tests/**/**/*.spec.ts --exit"
+    "test": "mocha -r 'tests/index.spec.js' tests/**/*.spec.ts",
+    "coverage": "nyc yarn test",
+    "coverage-report": "nyc --reporter=lcov yarn test"
   },
   "keywords": [
     "addapptables",
@@ -26,8 +28,9 @@
     "url": "https://github.com/addapptables/miscellaneous/issues"
   },
   "dependencies": {
-    "uuid": "^3.4.0",
-    "@addapptables/bus": "^0.0.0"
+    "@addapptables/bus": "^0.0.0",
+    "ramda": "^0.26.1",
+    "uuid": "^3.4.0"
   },
   "peerDependencies": {
     "@addapptables/bus": "^0.0.0",
@@ -39,6 +42,7 @@
   },
   "devDependencies": {
     "@nestjs/testing": "^6.10.14",
-    "@types/bluebird": "^3.5.29"
+    "@types/bluebird": "^3.5.29",
+    "@types/ramda": "^0.26.40"
   }
 }

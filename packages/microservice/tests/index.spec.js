@@ -1,7 +1,8 @@
 require('ts-node/register');
 
 const chai = require('chai')
-// .use(require('chai-as-promised'));
+  // .use(require('chai-as-promised'))
+  .use(require('chai-uuid'));
 
 // Chai
 global.chai = chai;

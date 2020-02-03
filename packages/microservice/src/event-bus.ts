@@ -32,9 +32,8 @@ export class EventBus extends Bus {
     return Reflect.getMetadata(EVENT_HANDLER_METADATA, handler);
   }
 
-
   protected subscribe = (handle: IHandler<any>): (data: any) => Promise<any> => async (data: any): Promise<any> => {
-    return handle.handle;
+    return handle.handle(data);
   }
 
 }

@@ -8,34 +8,36 @@ import { Saga } from './saga';
 
 export class SagaProcess implements ISagaStart, ISagaAdd {
 
-    private readonly cid: string;
+	private readonly cid: string;
 
-    private data: ITransferData<TransferDataDto>;
+	private data: ITransferData<TransferDataDto>;
 
-    constructor(private readonly adapter: IBusAdapter) {
-        this.cid = uuid();
-    }
+	constructor(private readonly adapter: IBusAdapter) {
+		this.cid = uuid();
+	}
 
-    add(data: ITransferData<TransferDataDto>): ISagaAdd {
-        this.data = data;
-        return this;
-    }
+	add(data: ITransferData<TransferDataDto>): ISagaAdd {
+		this.data = data;
+		return this;
+	}
 
-    end<T = any>(): Promise<T> {
-        const sagas = Saga.getInstance();
-        return new Promise(async (resolve, reject) => {
-            sagas.add(this.cid, (data: T) => {
-                try {
-                    resolve(data);
-                } catch (error) {
-                    reject(error);
-                }
-            });
+	end<T = any>(): Promise<T> {
+		const sagas = Saga.getInstance();
+		return new Promise(async (resolve, reject) => {
+			sagas.add(this.cid, (data: T) => {
+				// TODO: add logger
+				try {
+					resolve(data);
+				} catch (error) {
+					// TODO: catch message with errors
+					reject(error);
+				}
+			});
 
-            const data = { ...this.data, cid: this.cid };
+			const data = { ...this.data, cid: this.cid };
 
-            await this.adapter.publish(data);
-        });
-    }
+			await this.adapter.publish(data);
+		});
+	}
 
 }
