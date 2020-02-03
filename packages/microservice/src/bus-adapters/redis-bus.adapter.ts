@@ -6,25 +6,21 @@ import { loadPackage } from '../utils/load-package.util';
 import { IOnInit } from '../interfaces/lifecycles';
 import { ISetOptions } from '../interfaces/set-options.interface';
 
-let redisPackage: any = {};
 
 export class RedisBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
-    private pub;
-
-    private sub;
-
-    private options = {};
-
-    private handles: Map<string, Function[]>;
-
+    private readonly redisPackage: any = {};
     private readonly logger: Logger;
+    private pub;
+    private sub;
+    private options = {};
+    private handles: Map<string, Function[]>;
 
 
     constructor() {
         this.handles = new Map();
         this.logger = new Logger(RedisBusAdapter.name);
-        redisPackage = loadPackage('redis', RedisBusAdapter.name)
+        this.redisPackage = loadPackage('redis', RedisBusAdapter.name)
     }
 
     setOptions(options: any): void {
@@ -32,8 +28,8 @@ export class RedisBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
     }
 
     async onInit(): Promise<void> {
-        this.pub = redisPackage.createClient(this.options);
-        this.sub = redisPackage.createClient(this.options);
+        this.pub = this.redisPackage.createClient(this.options);
+        this.sub = this.redisPackage.createClient(this.options);
         this.listenMessages();
     }
 
