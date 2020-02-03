@@ -77,6 +77,7 @@ export class Kafka {
                 const consumerToGetMessage = Math.floor(Math.random() * consumers.length);
                 consumers[consumerToGetMessage].eachMessage({
                     message,
+                    topic,
                 });
             });
         });
