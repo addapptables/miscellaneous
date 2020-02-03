@@ -1,8 +1,13 @@
 import * as chai from 'chai';
-import { LocalBusAdapter } from '../../src/bus-adapters/local-bus.adapter';
+import * as sinon from 'sinon';
 import { IBusAdapter } from '../../src/interfaces/bus/bus-adapter.interface';
+import { NatsBusAdapter } from '../../src/bus-adapters/nats-bus.adapter';
+import * as loadPackage from '../../src/utils/load-package.util';
+import { Nats } from './mocks/nats.mock';
 
-describe('local bus adapter', () => {
+describe('nats bus adapter', () => {
+
+    let sandbox;
 
     const testData = {
         action: 'test-action',
@@ -10,30 +15,36 @@ describe('local bus adapter', () => {
         data: { id: '' },
     };
 
-    let localAdapter: IBusAdapter;
+    let natsAdapter: IBusAdapter;
 
-    beforeEach(() => {
-        localAdapter = new LocalBusAdapter();
+    before(async () => {
+        sandbox = sinon.createSandbox();
+        sandbox.stub(loadPackage, 'loadPackage').returns(new Nats());
+        const adapter = new NatsBusAdapter();
+        adapter.setOptions({ url: 'nats://localhost:4222' });
+        await adapter.onInit();
+        natsAdapter = adapter;
     })
 
-    afterEach(() => {
-        localAdapter.close();
+    after(() => {
+        natsAdapter.close();
+        sandbox.restore();
     })
 
     describe('Subscribe', () => {
         it('Should be equal to test-context', (done) => {
-            localAdapter.subscribe((result) => {
+            natsAdapter.subscribe((result) => {
                 chai.expect(result.context).to.be.equal(testData.context);
                 done();
             }, testData);
-            localAdapter.publish(testData);
+            natsAdapter.publish(testData);
         })
 
         it('Should not execute', (done) => {
-            localAdapter.subscribe(() => {
+            natsAdapter.subscribe(() => {
                 throw 'It should not entry here';
             }, testData);
-            localAdapter.publish({ ...testData, context: 'other-context' });
+            natsAdapter.publish({ ...testData, context: 'other-context' });
             setTimeout(() => {
                 done();
             }, 500);
@@ -41,7 +52,7 @@ describe('local bus adapter', () => {
 
         it('Should throw a exception', (done) => {
             const data = { ...testData, context: 'test-exception' };
-            localAdapter.subscribe(() => {
+            natsAdapter.subscribe(() => {
                 try {
                     throw 'Exception';
                 } catch (error) {
@@ -49,25 +60,25 @@ describe('local bus adapter', () => {
                     done();
                 }
             }, data);
-            localAdapter.publish(data);
+            natsAdapter.publish(data);
         })
 
         it('Should be called twice', (done) => {
             const data = { ...testData, context: 'twice' };
             let counter = 0;
-            localAdapter.subscribe(() => {
+            natsAdapter.subscribe(() => {
                 counter++;
                 if (counter > 1) {
                     done();
                 }
             }, data);
-            localAdapter.subscribe(() => {
+            natsAdapter.subscribe(() => {
                 counter++;
                 if (counter > 1) {
                     done();
                 }
             }, data);
-            localAdapter.publish(data);
+            natsAdapter.publish(data);
         })
     })
 });

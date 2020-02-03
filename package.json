@@ -2,13 +2,13 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "@nestjs/common": "^6.11.1",
-    "@nestjs/core": "^6.11.1",
     "@types/chai": "4.2.7",
     "@types/chai-uuid": "^1.0.1",
     "@types/mocha": "^5.2.7",
     "@types/sinon": "^7.5.1",
     "bluebird": "^3.7.2",
+    "@types/kafka-node": "^3.0.0",
+    "@types/redis": "^2.8.14",
     "chai": "^4.2.0",
     "chai-uuid": "^1.0.6",
     "lerna": "^3.20.0",
@@ -20,5 +20,15 @@
     "ts-node": "^8.6.1",
     "tslint": "^5.20.1",
     "typescript": "^3.7.4"
+  },
+  "dependencies": {
+    "@nestjs/common": "^6.11.4",
+    "@nestjs/core": "^6.11.4",
+    "@types/sinon": "^7.5.1",
+    "bluebird": "^3.7.2",
+    "kafkajs": "^1.11.0",
+    "redis": "^2.8.0",
+    "mqtt": "^3.0.0",
+    "nats": "^1.4.0"
   }
 }

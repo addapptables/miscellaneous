@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@addapptables/bus": "^0.0.0",
-    "@types/ramda": "^0.26.40",
     "ramda": "^0.26.1",
     "uuid": "^3.4.0"
   },
@@ -43,6 +42,7 @@
   },
   "devDependencies": {
     "@nestjs/testing": "^6.10.14",
-    "@types/bluebird": "^3.5.29"
+    "@types/bluebird": "^3.5.29",
+    "@types/ramda": "^0.26.40"
   }
 }
