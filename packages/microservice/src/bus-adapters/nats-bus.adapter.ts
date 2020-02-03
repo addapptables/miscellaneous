@@ -8,19 +8,16 @@ import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { loadPackage } from '../utils/load-package.util';
 
-let natsPackage: any = {};
-
 export class NatsBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
-    private options: any = {};
-
+    private readonly natsPackage: any = {};
     private readonly logger: Logger;
-
+    private options: any = {};
     private nats: any;
 
     constructor() {
         this.logger = new Logger(NatsBusAdapter.name);
-        natsPackage = loadPackage('nats', NatsBusAdapter.name);
+        this.natsPackage = loadPackage('nats', NatsBusAdapter.name);
     }
 
     setOptions(options: any): void {
@@ -28,7 +25,7 @@ export class NatsBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
     }
 
     async onInit(): Promise<void> {
-        this.nats = natsPackage.connect(this.options);
+        this.nats = this.natsPackage.connect(this.options);
         const onConnect = fromEvent<Function>(this.nats, 'connect');
         const onError = fromEvent<Function>(this.nats, 'error').pipe(map((error) => { throw error }));
         await merge(onConnect, onError).pipe(first()).toPromise();
