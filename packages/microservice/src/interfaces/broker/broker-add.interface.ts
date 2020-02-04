@@ -1,4 +1,4 @@
 
-export interface ISagaAdd {
+export interface IBrokerAdd {
     end<T = any>(): Promise<T>;
 }

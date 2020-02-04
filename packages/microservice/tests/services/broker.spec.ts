@@ -1,20 +1,20 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
-import { Saga } from '../../src/services/saga/saga';
+import { Broker } from '../../src/services/broker/broker';
 
-describe('Saga', () => {
+describe('Broker', () => {
 
   after(() => {
-    Saga['instance'] = undefined;
+    Broker['instance'] = undefined;
   });
 
-  it('should Saga getInstance', () => {
-    const saga = Saga.getInstance();
-    chai.expect(saga instanceof Saga).to.be.true;
+  it('should Broker getInstance', () => {
+    const saga = Broker.getInstance();
+    chai.expect(saga instanceof Broker).to.be.true;
   });
 
   it('should get an element', () => {
-    const saga = Saga.getInstance();
+    const saga = Broker.getInstance();
     const get = sinon.spy(saga['sagas'], 'get');
 
     saga.add('0c8374b3-32cc-41b3-8dfe-e1570b554e6d', () => { });
@@ -27,7 +27,7 @@ describe('Saga', () => {
   });
 
   it('should add an element', () => {
-    const saga = Saga.getInstance();
+    const saga = Broker.getInstance();
     const set = sinon.spy(saga['sagas'], 'set');
     saga.add('0c8374b3-32cc-41b3-8dfe-e1570b554e6d', () => { });
 
@@ -41,7 +41,7 @@ describe('Saga', () => {
   });
 
   it('should delete an element', () => {
-    const saga = Saga.getInstance();
+    const saga = Broker.getInstance();
     const remove = sinon.spy(saga['sagas'], 'delete');
     saga.add('0c8374b3-32cc-41b3-8dfe-e1570b554e6d', () => { });
 

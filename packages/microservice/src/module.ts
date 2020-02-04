@@ -5,7 +5,7 @@ import { MICROSERVICE_CONFIG_PROVIDER } from './config/constants.config';
 import { CommandBus } from './command-bus';
 import { EventBus } from './event-bus';
 import { ExplorerService } from './services/explore.service';
-import { SagaService } from './services/saga/saga.service';
+import { BrokerService } from './services/broker/broker.service';
 import { IHandler } from './interfaces';
 import { Class } from './types';
 
@@ -15,10 +15,10 @@ import { Class } from './types';
     CommandBus,
     EventBus,
     ExplorerService,
-    SagaService,
+    BrokerService,
   ],
   exports: [
-    SagaService,
+    BrokerService,
     EventBus,
   ],
 })

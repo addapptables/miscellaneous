@@ -13,5 +13,5 @@ export { IBusAdapter } from './bus/bus-adapter.interface';
 export { IHandler } from './handler.interface';
 export * from './microservice-options.interface';
 export * from './lifecycles';
-export * from './saga';
+export * from './broker';
 export * from './set-options.interface';

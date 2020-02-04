@@ -3,24 +3,24 @@ import * as chai from 'chai';
 import { InitializeMicroservice } from '../../src/services/initialize-microservice.service';
 import { EventBus } from '../../src/event-bus';
 import { CommandBus } from '../../src/command-bus';
-import { SagaService } from '../../src/services/saga/saga.service';
+import { BrokerService } from '../../src/services/broker/broker.service';
 
 describe('Initialize Microservice Service', () => {
 
   let initializeMicroserviceInstance;
   const sandbox = sinon.createSandbox();
-  let eventBusSpy, commandBusSpy, sagaServiceSpy;
+  let eventBusSpy, commandBusSpy, brokerServiceSpy;
   const eventsBus: EventBus = <EventBus>{ onInit: () => { } };
   const commandsBus: CommandBus = <CommandBus>{ onInit: () => { } };
-  const sagaService: SagaService = <SagaService>{ onInit: () => { } };
+  const brokerService: BrokerService = <BrokerService>{ onInit: () => { } };
 
   before(() => {
     eventBusSpy = sandbox.spy(eventsBus, 'onInit');
     commandBusSpy = sandbox.spy(commandsBus, 'onInit');
-    sagaServiceSpy = sandbox.spy(sagaService, 'onInit');
+    brokerServiceSpy = sandbox.spy(brokerService, 'onInit');
 
     initializeMicroserviceInstance = new InitializeMicroservice(
-      eventsBus, commandsBus, sagaService
+      eventsBus, commandsBus, brokerService
     );
   });
 
@@ -32,7 +32,7 @@ describe('Initialize Microservice Service', () => {
     await initializeMicroserviceInstance.init();
     chai.expect(eventBusSpy.calledOnce).to.be.true;
     chai.expect(commandBusSpy.calledOnce).to.be.true;
-    chai.expect(sagaServiceSpy.calledOnce).to.be.true;
+    chai.expect(brokerServiceSpy.calledOnce).to.be.true;
   });
 
 });

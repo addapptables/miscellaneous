@@ -1,12 +1,12 @@
 import * as uuid from 'uuid/v4';
-import { ISagaStart } from '../../interfaces/saga/saga-start.interface';
-import { ISagaAdd } from '../../interfaces/saga/saga-add.interface';
+import { IBrokerStart } from '../../interfaces/broker/broker-start.interface';
+import { IBrokerAdd } from '../../interfaces/broker/broker-add.interface';
 import { IBusAdapter } from '../../interfaces';
 import { ITransferData } from '../../interfaces/transfer-data';
 import { TransferDataDto } from '../../interfaces/transfer-data-dto.interface';
-import { Saga } from './saga';
+import { Broker } from './broker';
 
-export class SagaProcess implements ISagaStart, ISagaAdd {
+export class BrokerProcess implements IBrokerStart, IBrokerAdd {
 
 	private readonly cid: string;
 
@@ -16,15 +16,15 @@ export class SagaProcess implements ISagaStart, ISagaAdd {
 		this.cid = uuid();
 	}
 
-	add(data: ITransferData<TransferDataDto>): ISagaAdd {
+	add(data: ITransferData<TransferDataDto>): IBrokerAdd {
 		this.data = data;
 		return this;
 	}
 
 	end<T = any>(): Promise<T> {
-		const sagas = Saga.getInstance();
+		const brokers = Broker.getInstance();
 		return new Promise(async (resolve, reject) => {
-			sagas.add(this.cid, (data: T) => {
+			brokers.add(this.cid, (data: T) => {
 				// TODO: add logger
 				try {
 					resolve(data);

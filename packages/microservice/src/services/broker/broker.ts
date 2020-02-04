@@ -1,6 +1,6 @@
-export class Saga {
+export class Broker {
 
-    private static instance: Saga;
+    private static instance: Broker;
 
     private sagas: Map<string, Function>;
 
@@ -9,10 +9,10 @@ export class Saga {
     }
 
     static getInstance() {
-        if (!Saga.instance) {
-            Saga.instance = new Saga();
+        if (!Broker.instance) {
+            Broker.instance = new Broker();
         }
-        return Saga.instance;
+        return Broker.instance;
     }
 
     get(cid: string): Function {
