@@ -3,6 +3,11 @@ export { ICommandHandlerOptions } from './commands/command-handler-options.inter
 export { ICommandHandler } from './commands/command-handler.interface';
 export { ICommand } from './commands/command.interface';
 
+export { IQueryDto } from './queries/query-dto-interface';
+export { IQueryHandlerOptions } from './queries/query-handler-options.interface';
+export { IQueryHandler } from './queries/query-handler.interface';
+export { IQuery } from './queries/query.interface';
+
 export { IEventDto } from './events/event-dto.interface';
 export { IEventHandlerOptions } from './events/event-handler-options.interface';
 export { IEventHandler } from './events/event-handler.interface';

@@ -6,8 +6,10 @@ import { head } from 'ramda';
 import { ExplorerService } from '../../src/services/explore.service';
 import { CommandHandler } from '../../src/decorators/command-handler.decorator';
 import { EventHandler } from '../../src/decorators/event-handler.decorator';
+import { QueryHandler } from '../../src/decorators/query-handler.decorator';
 import { Command } from '../../src/command';
 import { Event } from '../../src/event';
+import { Query } from '../../src/query';
 import { COMMAND_HANDLER_METADATA } from '../../src/config';
 
 describe('Explore Service', () => {
@@ -24,16 +26,25 @@ describe('Explore Service', () => {
     context: string; action: string; data: any = {};
   }
 
+  class TestQuery extends Query<any> {
+    context: string; action: string; data: any = {};
+  }
+
   @CommandHandler(TestCommand)
   class TestCommandHandler { }
 
   @EventHandler(TestEvent)
   class TestEventHandler { }
 
+  @QueryHandler(TestQuery)
+  class TestQueryHandler { }
+
+
   before(async () => {
     module = await Test.createTestingModule({
       providers: [
-        TestCommandHandler, TestEventHandler, ExplorerService,
+        TestCommandHandler, TestEventHandler,
+        TestQueryHandler, ExplorerService,
       ],
     }).compile();
 
@@ -57,6 +68,14 @@ describe('Explore Service', () => {
     chai.expect(handler.name).to.be.equal(TestEventHandler.name);
   });
 
+  it('should get query handler prototypes', () => {
+    const handlers = explorerServiceInstance.getQueryHandlers();
+    const handler = head(handlers);
+
+    chai.expect(Array.isArray(handlers)).to.be.true;
+    chai.expect(handler.name).to.be.equal(TestQueryHandler.name);
+  });
+
   it('should get command prototypes', () => {
     const commands = explorerServiceInstance.getCommands();
     const command = head(commands);
@@ -71,6 +90,14 @@ describe('Explore Service', () => {
 
     chai.expect(Array.isArray(events)).to.be.true;
     chai.expect(event.name).to.be.equal(TestEvent.name);
+  });
+
+  it('should get query prototypes', () => {
+    const queries = explorerServiceInstance.getQueries();
+    const query = head(queries);
+
+    chai.expect(Array.isArray(queries)).to.be.true;
+    chai.expect(query.name).to.be.equal(TestQuery.name);
   });
 
   it('should flat handler prototypes', () => {
