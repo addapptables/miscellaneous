@@ -1,6 +1,5 @@
 import { Logger } from '@nestjs/common';
 import { Consumer, Producer } from '@nestjs/common/interfaces/external/kafka-options.interface';
-import * as uuid from 'uuid/v4';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
