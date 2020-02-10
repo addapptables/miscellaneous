@@ -1,66 +1,58 @@
 import { ModuleRef } from '@nestjs/core';
-import { TypeHandler } from './types';
-import { ICommand } from './interfaces/commands/command.interface';
-import { IEvent } from './interfaces/events/event.interface';
-import { ICommandDto } from './interfaces/commands/command-dto-interface';
-import { IEventDto } from './interfaces/events/event-dto.interface';
-import { IBusAdapter, IOnInitAdapter } from './interfaces/bus/bus-adapter.interface';
+import { Class } from './types';
+import { IBusAdapter } from './interfaces/bus/bus-adapter.interface';
 import { MicroserviceOptions } from './interfaces/microservice-options.interface';
-import { CONFIG_PROVIDER_TOKEN } from './config/constants.config';
-import { HandlerTypes } from './enums/handler-types.enum';
+import { MICROSERVICE_CONFIG_PROVIDER } from './config/constants.config';
+import { IHandler, IOnInit } from './interfaces';
+import { ITransferData } from './interfaces/transfer-data';
+import { TransferDataDto } from './interfaces/transfer-data-dto.interface';
+import { InitializeAdapterBus } from './services/initialize-adapter-bus.service';
+import { OnModuleDestroy } from '@nestjs/common';
 
-// TODO: implement adapter steps
-export abstract class Bus {
+export abstract class Bus implements IOnInit, OnModuleDestroy {
 
   protected adapter: IBusAdapter;
 
-  protected readonly configProvider: MicroserviceOptions[]
+  protected readonly microserviceOptions: MicroserviceOptions
 
   constructor(protected readonly moduleRef: ModuleRef) {
-    this.configProvider = this.moduleRef.get(CONFIG_PROVIDER_TOKEN);
+    this.microserviceOptions = this.moduleRef.get(MICROSERVICE_CONFIG_PROVIDER);
   }
 
-  abstract publish(data: ICommand<ICommandDto> | IEvent<IEventDto>): any;
+  abstract publish(data: ITransferData<TransferDataDto>): any;
 
   protected abstract registerHandlers(): void;
 
-  protected abstract reflectName(handler: TypeHandler): FunctionConstructor;
+  protected abstract reflectName(handler: Class<IHandler>): Class<ITransferData<TransferDataDto>>;
 
-  protected abstract get getHandlerTypeType(): HandlerTypes;
+  protected abstract subscribe(handle: IHandler): (data: any) => Promise<any>;
 
-  async init(): Promise<void> {
+  async onInit(): Promise<void> {
     await this.resolveAdapter();
     await this.registerHandlers();
   }
 
   protected async resolveAdapter(): Promise<void> {
-    const adapterConfig = this.configProvider.find(config => [this.getHandlerTypeType, HandlerTypes.ALL].includes(config.type));
+    const adapterInstance = await (new InitializeAdapterBus(this.microserviceOptions))
+      .init(this.microserviceOptions.adapter.adapterConfig);
 
-    if (!adapterConfig) {
-      // TODO: create an exception class
-      throw new Error(`The Bus Adapter was not configure for the ${this.getHandlerTypeType}.`);
-    }
-
-    // TODO: figure out the best way to set the adapter
-    this.adapter = adapterConfig.adapter;
-
-    // TODO: figure out what is the best way
-    if (typeof this.adapter[IOnInitAdapter] === 'function') {
-      await this.adapter[IOnInitAdapter]();
-    }
-
+    this.adapter = adapterInstance;
   }
 
-  protected registerHandler = (handler: TypeHandler): void => {
-    const instance: TypeHandler = this.moduleRef.get(handler, { strict: false });
+  protected registerHandler = (handler: Class<IHandler>): void => {
+    const instance: IHandler = this.moduleRef.get(handler, { strict: false });
 
     if (!instance) {
       return;
     }
 
-    const target = this.reflectName(handler);
-
-    this.adapter.subscribe(instance, <any>target);
+    const Target = this.reflectName(handler);
+    const data = new Target();
+    this.adapter.subscribe(this.subscribe(instance), data);
   };
+
+  onModuleDestroy() {
+    this.adapter.close();
+  }
 
 }

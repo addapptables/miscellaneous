@@ -6,7 +6,8 @@ import { ICommand } from './interfaces/commands/command.interface';
 import { ICommandDto } from './interfaces/commands/command-dto-interface';
 import { COMMAND_HANDLER_METADATA } from './config';
 import { ExplorerService } from './services/explore.service';
-import { HandlerTypes } from './enums/handler-types.enum';
+import { IHandler } from './interfaces';
+import { Class } from './types';
 
 @Injectable()
 export class CommandBus extends Bus {
@@ -23,16 +24,34 @@ export class CommandBus extends Bus {
   }
 
   protected registerHandlers(): void {
-    const handlers = this.explorerService.getCommands();
+    const handlers = this.explorerService.getCommandHandlers();
     handlers.forEach(this.registerHandler);
   }
 
-  protected get getHandlerTypeType() {
-    return HandlerTypes.COMMAND;
-  }
-
-  protected reflectName(handler: Type<ICommandHandler<ICommand<ICommandDto>>>): FunctionConstructor {
+  protected reflectName(handler: Type<ICommandHandler<ICommand<ICommandDto>>>): Class<ICommand<ICommandDto>> {
     return Reflect.getMetadata(COMMAND_HANDLER_METADATA, handler);
   }
+
+  protected subscribe = (handle: IHandler<any>): (data: any) => Promise<any> =>
+    async (data: any): Promise<any> => {
+      const context = 'addapptables-saga';
+      const action = 'saga-event';
+      let eventData = { ...data, action, context };
+
+      try {
+
+        await handle.handle(data);
+
+      } catch (error) {
+
+        eventData = { ...eventData, error: error.message };
+
+      } finally {
+
+        await this.adapter.publish(eventData);
+
+      }
+
+    }
 
 }
