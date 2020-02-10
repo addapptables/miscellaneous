@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: ./.github/actions/publish
+      - uses: ./.github/actions/action
