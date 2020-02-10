@@ -1,47 +1,100 @@
-import { rabbitmqCreateBus as createBus, IBus } from '@addapptables/bus';
+import { Logger } from '@nestjs/common';
+import * as R from 'ramda';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { IOnInit } from '../interfaces/lifecycles';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { ISetOptions } from '../interfaces/set-options.interface';
+import { loadPackage } from '../utils/load-package.util';
 
 export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
-  private bus: IBus;
-
   private options: any = {};
+  private readonly logger: Logger;
+  private readonly rabbitmqPackage: any;
+  private rabbitmq: any;
+  private pubChannel: any;
+  private subChannel: any;
 
-  async onInit(): Promise<void> {
-    this.bus = await createBus(this.options);
+  constructor() {
+    this.logger = new Logger(RabbitMQBusAdapter.name);
+    this.rabbitmqPackage = loadPackage('amqplib', RabbitMQBusAdapter.name);
   }
 
-  publish(data: ITransferData<TransferDataDto>): Promise<void> {
-    const { action, context } = data;
+  async onInit(): Promise<void> {
+    this.rabbitmq = await this.rabbitmqPackage.connection(this.options.host);
+    this.subChannel = await this.rabbitmq.createChannel();
+    this.pubChannel = await this.rabbitmq.createChannel();
+  }
 
-    return this.bus.publish(action, data, context);
+  async publish(data: ITransferData<TransferDataDto>, options?: any): Promise<void> {
+    options = options || {};
+    const { action, context } = data;
+    const exchange = R.or(context, this.options.exchange);
+    const type = R.or(this.options.type, 'topic');
+
+    await this.pubChannel.assertExchange(exchange, type, this.exchangeDefault(options.exchange || {}))
+      .then(() => this.pubChannel.publish(
+        exchange,
+        action,
+        new Buffer(JSON.stringify(data)),
+        this.publishDefault(options.publish || {})
+      ));
   }
 
   async subscribe(handle: Function, data: ITransferData<TransferDataDto>, options?: any): Promise<void> {
-    const internalHandle = async (msg, ack, nack) => {
-      // TODO: this should be validate appropriately
-      try {
-        await handle(JSON.parse(msg.content.toString()));
-        ack();
-      } catch (error) {
-        console.log('error', error);
-        nack();
-      }
-    };
+    options = options || {};
+    const { action, context } = data;
+    const exchange = R.or(context, this.options.exchange);
+    const service = R.or(options.service, this.options.service);
+    const queue = `${service}.${exchange}.${action}`;
+    const type = R.or(this.options.type, 'topic');
+    const prefetch = 1;
 
-    this.bus.subscribe(data.action, internalHandle, data.context, options);
+    this.subChannel.prefetch(R.or(options.prefetch, prefetch));
+
+    await this.subChannel.assertExchange(exchange, type, this.exchangeDefault(options.exchange || {}))
+      .then(() => this.subChannel.assertQueue(queue, this.queueDefault(options.queue || {})))
+      .then(() => this.subChannel.bindQueue(queue, exchange, action))
+      .then(() => this.subChannel.consume(queue, this.subscribeHandle(handle), this.subscribeDefault(options.subscribe || {})));
+  }
+
+  private subscribeHandle = (handle: Function) => async (message) => {
+    try {
+      await handle(JSON.parse(message.content.toString()));
+      this.subChannel.ack(message);
+    } catch (error) {
+      this.logger.error('subscribe handle:', error);
+      this.subChannel.nack(message);
+    }
   }
 
   setOptions(options: any): void {
     this.options = options;
   }
 
-  close(): void {
-    this.bus.close();
+  async close(): Promise<void> {
+    await this.rabbitmq.close();
   }
+
+  private queueDefault = R.mergeDeepRight({
+    durable: true,
+    autoDelete: false,
+    exclusive: false,
+  });
+
+  private subscribeDefault = R.mergeDeepRight({
+    noAck: false,
+    exclusive: false,
+  });
+
+  private exchangeDefault = R.mergeDeepRight({
+    durable: true,
+    autoDelete: false,
+  });
+
+  private publishDefault = R.mergeDeepRight({
+    persistent: true,
+  });
 
 }
