@@ -1,7 +1,7 @@
 name: miscellaneous-ci
 
 on:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -9,9 +9,5 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@master
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+      - uses: actions/checkout@master
+      - uses: ./.github/actions/publish
