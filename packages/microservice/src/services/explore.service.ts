@@ -7,8 +7,8 @@ import { ICommandHandler } from '../interfaces/commands/command-handler.interfac
 import { ICommandDto } from '../interfaces/commands/command-dto-interface';
 import { IEventHandler } from '../interfaces/events/event-handler.interface';
 import { IEventDto } from '../interfaces/events/event-dto.interface';
-import { COMMAND_HANDLER_METADATA, EVENT_HANDLER_METADATA } from '../config';
-import { ICommand, IEvent, IHandler } from '../interfaces';
+import { COMMAND_HANDLER_METADATA, EVENT_HANDLER_METADATA, QUERY_HANDLER_METADATA } from '../config';
+import { ICommand, IEvent, IHandler, IQueryHandler, IQuery, IQueryDto } from '../interfaces';
 import { Class } from '../types';
 
 @Injectable()
@@ -33,6 +33,14 @@ export class ExplorerService {
     return events;
   }
 
+  getQueryHandlers(): Class<IQueryHandler<IQuery<IQueryDto>>>[] {
+    const modules = [...this.modulesContainer.values()];
+    const queries = this.flatMap<IQueryHandler<IQuery<IQueryDto>>>(modules, instance =>
+      this.filterProvider(instance, QUERY_HANDLER_METADATA)
+    );
+    return queries;
+  }
+
   getCommands(): Class<ICommand<ICommandDto>>[] {
     return this.getCommandHandlers()
       .map(handler => Reflect.getMetadata(COMMAND_HANDLER_METADATA, handler));
@@ -41,6 +49,11 @@ export class ExplorerService {
   getEvents(): Class<IEvent<IEventDto>>[] {
     return this.getEventHandlers()
       .map(handler => Reflect.getMetadata(EVENT_HANDLER_METADATA, handler));
+  }
+
+  getQueries(): Class<IQuery<IQueryDto>>[] {
+    return this.getQueryHandlers()
+      .map(handler => Reflect.getMetadata(QUERY_HANDLER_METADATA, handler));
   }
 
   flatMap<T>(

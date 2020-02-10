@@ -4,6 +4,7 @@ import { InitializeMicroservice } from './services/initialize-microservice.servi
 import { MICROSERVICE_CONFIG_PROVIDER } from './config/constants.config';
 import { CommandBus } from './command-bus';
 import { EventBus } from './event-bus';
+import { QueryBus } from './query-bus';
 import { ExplorerService } from './services/explore.service';
 import { BrokerService } from './services/broker/broker.service';
 import { IHandler } from './interfaces';
@@ -14,6 +15,7 @@ import { Class } from './types';
     InitializeMicroservice,
     CommandBus,
     EventBus,
+    QueryBus,
     ExplorerService,
     BrokerService,
   ],
