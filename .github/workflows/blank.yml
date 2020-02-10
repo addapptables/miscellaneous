@@ -1,0 +1,16 @@
+name: Miscellaneous-CI
+
+on: 
+  push:
+    branches: 
+      - master
+
+jobs:
+  build:
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@master
+    - name: Run a multi-line script
+      run: |
+        echo Add other actions to build,
+        echo test, and deploy your project.
