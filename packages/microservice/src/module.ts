@@ -1,14 +1,28 @@
 import { Module, OnModuleInit, DynamicModule } from '@nestjs/common';
-import { TypeHandler } from './types';
 import { MicroserviceOptions } from './interfaces/microservice-options.interface';
 import { InitializeMicroservice } from './services/initialize-microservice.service';
-import { CONFIG_PROVIDER_TOKEN } from './config/constants.config';
+import { MICROSERVICE_CONFIG_PROVIDER } from './config/constants.config';
+import { CommandBus } from './command-bus';
+import { EventBus } from './event-bus';
+import { QueryBus } from './query-bus';
+import { ExplorerService } from './services/explore.service';
+import { BrokerService } from './services/broker/broker.service';
+import { IHandler } from './interfaces';
+import { Class } from './types';
 
 @Module({
   providers: [
     InitializeMicroservice,
+    CommandBus,
+    EventBus,
+    QueryBus,
+    ExplorerService,
+    BrokerService,
   ],
-  exports: [],
+  exports: [
+    BrokerService,
+    EventBus,
+  ],
 })
 export class MicroserviceModule implements OnModuleInit {
 
@@ -16,23 +30,19 @@ export class MicroserviceModule implements OnModuleInit {
     private readonly initializeMicroservice: InitializeMicroservice
   ) { }
 
-  // TODO: refactor this code
-  static withConfig(config: MicroserviceOptions | MicroserviceOptions[], handlers?: TypeHandler[]): DynamicModule {
-    // TODO: control when one config just comes
-    const configTransformed = Array.isArray(config) ? config : [config];
-
+  static withConfig(config: MicroserviceOptions, handlers?: Class<IHandler>[]): DynamicModule {
     const configProvider = {
-      provide: CONFIG_PROVIDER_TOKEN,
-      useValue: configTransformed,
+      provide: MICROSERVICE_CONFIG_PROVIDER,
+      useValue: config,
     };
 
     return {
       module: MicroserviceModule,
-      providers: [...handlers, configProvider],
+      providers: [...(handlers || []), configProvider],
     }
   }
 
-  static register(handlers: TypeHandler[]): DynamicModule {
+  static register(handlers: Class<IHandler>[]): DynamicModule {
     return {
       module: MicroserviceModule,
       providers: [...handlers],
