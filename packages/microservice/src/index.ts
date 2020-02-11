@@ -4,6 +4,7 @@ export { AggregateRoot } from './aggregate-root';
 export { Command } from './command';
 export { Event } from './event';
 export { CommandBus } from './command-bus';
+export { QueryBus } from './query-bus';
 export { EventBus } from './event-bus';
 export { MicroserviceModule } from './module';
 export { BrokerService as Broker } from './services/broker/broker.service';
