@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { MICROSERVICE_CONFIG_PROVIDER } from '../../config/constants.config';
+import { MICROSERVICE_CONFIG_PROVIDER, BROKER_CONTEXT, BROKER_ACTION } from '../../config/constants.config';
 import { MicroserviceOptions, IBusAdapter, IOnInit, IBrokerStart } from '../../interfaces';
 import { Broker } from './broker';
 import { BrokerProcess } from './broker-process';
@@ -20,7 +20,7 @@ export class BrokerService implements IOnInit, OnModuleDestroy {
   async onInit() {
     const adapterInstance = await (new InitializeAdapterBus(this.microserviceOptions))
       .init(this.microserviceOptions.adapter.adapterBrokerConfig);
-    const config = { context: 'addapptables-broker', action: 'broker-event', data: null };
+    const config = { context: BROKER_CONTEXT, action: BROKER_ACTION, data: null };
     const options = { service: 'broker' };
     adapterInstance.subscribe(this.subscribe, config, options);
     this.adapterInstance = adapterInstance;

@@ -1,8 +1,7 @@
 import * as chai from 'chai';
 import { LocalBusAdapter } from '../../src/bus-adapters/local-bus.adapter';
-import { IBusAdapter } from '../../src/interfaces/bus/bus-adapter.interface';
 
-describe('local bus adapter', () => {
+describe.only('local bus adapter', () => {
 
     const testData = {
         action: 'test-action',
@@ -10,13 +9,14 @@ describe('local bus adapter', () => {
         data: { id: '' },
     };
 
-    let localAdapter: IBusAdapter;
+    let localAdapter: LocalBusAdapter;
 
-    beforeEach(() => {
+    before(() => {
         localAdapter = new LocalBusAdapter();
+        localAdapter.onInit();
     })
 
-    afterEach(() => {
+    after(() => {
         localAdapter.close();
     })
 

@@ -21,10 +21,10 @@ export class BrokerProcess implements IBrokerStart, IBrokerAdd {
 		return this;
 	}
 
-	end<T = any>(): Promise<T> {
+	end<T = any>(): Promise<ITransferData<T>> {
 		const brokers = Broker.getInstance();
 		return new Promise(async (resolve, reject) => {
-			brokers.add(this.cid, (data: T) => {
+			brokers.add(this.cid, (data: ITransferData<T>) => {
 				// TODO: add logger
 				try {
 					resolve(data);
@@ -35,7 +35,6 @@ export class BrokerProcess implements IBrokerStart, IBrokerAdd {
 			});
 
 			const data = { ...this.data, cid: this.cid };
-
 			await this.adapter.publish(data);
 		});
 	}

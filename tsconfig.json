@@ -4,7 +4,8 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es6"
+    "target": "es6",
+    "sourceMap": true
   },
   "include": [],
   "exclude": [

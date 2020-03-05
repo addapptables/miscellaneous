@@ -1,4 +1,5 @@
 import { ModuleRef } from '@nestjs/core';
+import { OnModuleDestroy, Logger } from '@nestjs/common';
 import { Class } from './types';
 import { IBusAdapter } from './interfaces/bus/bus-adapter.interface';
 import { MicroserviceOptions } from './interfaces/microservice-options.interface';
@@ -7,9 +8,10 @@ import { IHandler, IOnInit } from './interfaces';
 import { ITransferData } from './interfaces/transfer-data';
 import { TransferDataDto } from './interfaces/transfer-data-dto.interface';
 import { InitializeAdapterBus } from './services/initialize-adapter-bus.service';
-import { OnModuleDestroy } from '@nestjs/common';
 
 export abstract class Bus implements IOnInit, OnModuleDestroy {
+
+  private readonly logger: Logger;
 
   protected adapter: IBusAdapter;
 
@@ -17,6 +19,7 @@ export abstract class Bus implements IOnInit, OnModuleDestroy {
 
   constructor(protected readonly moduleRef: ModuleRef) {
     this.microserviceOptions = this.moduleRef.get(MICROSERVICE_CONFIG_PROVIDER);
+    this.logger = new Logger(Bus.name);
   }
 
   abstract publish(data: ITransferData<TransferDataDto>): any;
@@ -49,6 +52,7 @@ export abstract class Bus implements IOnInit, OnModuleDestroy {
     const Target = this.reflectName(handler);
     const data = new Target();
     this.adapter.subscribe(this.subscribe(instance), data);
+    this.logger.debug({ data }, 'RegisterHandler');
   };
 
   onModuleDestroy() {

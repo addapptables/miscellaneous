@@ -4,7 +4,7 @@ import { Bus } from './bus';
 import { ICommandHandler } from './interfaces/commands/command-handler.interface';
 import { ICommand } from './interfaces/commands/command.interface';
 import { ICommandDto } from './interfaces/commands/command-dto-interface';
-import { COMMAND_HANDLER_METADATA } from './config';
+import { COMMAND_HANDLER_METADATA, BROKER_CONTEXT, BROKER_ACTION } from './config';
 import { ExplorerService } from './services/explore.service';
 import { IHandler } from './interfaces';
 import { Class } from './types';
@@ -34,24 +34,16 @@ export class CommandBus extends Bus {
 
   protected subscribe = (handle: IHandler<any>): (data: any) => Promise<any> =>
     async (data: any): Promise<any> => {
-      const context = 'addapptables-saga';
-      const action = 'saga-event';
-      let eventData = { ...data, action, context };
-
+      const context = BROKER_CONTEXT;
+      const action = BROKER_ACTION;
       try {
-
-        await handle.handle(data);
-
-      } catch (error) {
-
-        eventData = { ...eventData, error: error.message };
-
-      } finally {
-
+        const result = await handle.handle(data);
+        const eventData = { data: result, cid: data.cid, action, context };
         await this.adapter.publish(eventData);
-
+      } catch (error) {
+        let eventData = { ...data, action, context, error: error.message };
+        await this.adapter.publish(eventData);
       }
-
     }
 
 }

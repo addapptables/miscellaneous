@@ -4,15 +4,25 @@ import { filter, tap } from 'rxjs/operators';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
+import { IOnInit } from '../interfaces';
 
-export class LocalBusAdapter implements IBusAdapter {
+export class LocalBusAdapter implements IBusAdapter, IOnInit {
+
+  static instance: LocalBusAdapter;
 
   private bus: Subject<ITransferData<TransferDataDto>>;
 
-  private readonly logger: Logger;
+  private logger: Logger;
 
   constructor() {
-    this.bus = new Subject();
+    if (!LocalBusAdapter.instance) {
+      LocalBusAdapter.instance = this;
+      this.bus = new Subject();
+    }
+    return LocalBusAdapter.instance;
+  }
+
+  onInit(): void | Promise<void> {
     this.logger = new Logger(LocalBusAdapter.name);
   }
 
@@ -21,7 +31,7 @@ export class LocalBusAdapter implements IBusAdapter {
     this.bus.next(data);
   }
 
-  async subscribe(handle: Function, data: ITransferData<TransferDataDto>): Promise<void> {
+  subscribe(handle: Function, data: ITransferData<TransferDataDto>): void {
     const internalHandle = async (msg: ITransferData<TransferDataDto>) => {
       try {
         await handle(msg);

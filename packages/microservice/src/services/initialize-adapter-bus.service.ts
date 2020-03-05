@@ -32,7 +32,6 @@ export class InitializeAdapterBus {
     if (typeof adapterInstance[OnInit] === 'function') {
       await adapterInstance[OnInit]();
     }
-
     return adapterInstance;
   }
 
