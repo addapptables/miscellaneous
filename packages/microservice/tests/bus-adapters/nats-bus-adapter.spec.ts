@@ -4,6 +4,7 @@ import { IBusAdapter } from '../../src/interfaces/bus/bus-adapter.interface';
 import { NatsBusAdapter } from '../../src/bus-adapters/nats-bus.adapter';
 import * as loadPackage from '../../src/utils/load-package.util';
 import { Nats } from './mocks/nats.mock';
+import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
 
 describe('nats bus adapter', () => {
 
@@ -20,7 +21,7 @@ describe('nats bus adapter', () => {
     before(async () => {
         sandbox = sinon.createSandbox();
         sandbox.stub(loadPackage, 'loadPackage').returns(new Nats());
-        const adapter = new NatsBusAdapter();
+        const adapter = new NatsBusAdapter(new CraftsLoggerMock());
         adapter.setOptions({ url: 'nats://localhost:4222' });
         await adapter.onInit();
         natsAdapter = adapter;

@@ -1,4 +1,4 @@
-import { Module, DynamicModule, OnModuleInit, Global } from '@nestjs/common';
+import { Module, OnModuleInit, Global } from '@nestjs/common';
 import { BrokerService } from './services/broker/broker.service';
 import { InitializeMicroservice } from './services/initialize-microservice.service';
 import { CommandBus, EventBus, QueryBus } from '.';

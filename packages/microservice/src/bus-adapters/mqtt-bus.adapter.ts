@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { IClientPublishOptions } from '@nestjs/common/interfaces/external/mqtt-options.interface';
 import { fromEvent, merge } from 'rxjs';
 import { map, first } from 'rxjs/operators';
@@ -8,7 +7,10 @@ import { ISetOptions } from '../interfaces/set-options.interface';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { loadPackage } from '../utils/load-package.util';
+import { CraftsLogger } from '../logger/services/logger.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
     mqttPackage: any = {};
@@ -21,11 +23,10 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
     };
 
     private handles: Map<string, Function[]>;
-    private readonly logger: Logger;
 
-    constructor() {
+    constructor(private readonly logger: CraftsLogger) {
         this.handles = new Map();
-        this.logger = new Logger(MqttBusAdapter.name);
+        logger.setContext(MqttBusAdapter.name);
         this.mqttPackage = loadPackage('mqtt', MqttBusAdapter.name);
     }
 

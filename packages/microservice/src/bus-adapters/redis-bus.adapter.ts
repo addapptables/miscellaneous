@@ -1,25 +1,25 @@
-import { Logger } from '@nestjs/common';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { loadPackage } from '../utils/load-package.util';
 import { IOnInit } from '../interfaces/lifecycles';
 import { ISetOptions } from '../interfaces/set-options.interface';
+import { CraftsLogger } from '../logger/services/logger.service';
+import { Injectable } from '@nestjs/common';
 
-
+@Injectable()
 export class RedisBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
     private readonly redisPackage: any = {};
-    private readonly logger: Logger;
     private pub;
     private sub;
     private options = {};
     private handles: Map<string, Function[]>;
 
 
-    constructor() {
+    constructor(private readonly logger: CraftsLogger) {
         this.handles = new Map();
-        this.logger = new Logger(RedisBusAdapter.name);
+        logger.setContext(RedisBusAdapter.name);
         this.redisPackage = loadPackage('redis', RedisBusAdapter.name)
     }
 

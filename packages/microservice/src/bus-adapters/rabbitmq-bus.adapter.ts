@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import * as R from 'ramda';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { IOnInit } from '../interfaces/lifecycles';
@@ -6,18 +5,20 @@ import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { ISetOptions } from '../interfaces/set-options.interface';
 import { loadPackage } from '../utils/load-package.util';
+import { CraftsLogger } from '../logger/services/logger.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
   private options: any = {};
-  private readonly logger: Logger;
   private readonly rabbitmqPackage: any;
   private rabbitmq: any;
   private pubChannel: any;
   private subChannel: any;
 
-  constructor() {
-    this.logger = new Logger(RabbitMQBusAdapter.name);
+  constructor(private readonly logger: CraftsLogger) {
+    logger.setContext(RabbitMQBusAdapter.name);
     this.rabbitmqPackage = loadPackage('amqplib', RabbitMQBusAdapter.name);
   }
 
@@ -37,7 +38,7 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
       .then(() => this.pubChannel.publish(
         exchange,
         action,
-        new Buffer(JSON.stringify(data)),
+        Buffer.from(JSON.stringify(data)),
         this.publishDefault(options.publish || {})
       ));
   }

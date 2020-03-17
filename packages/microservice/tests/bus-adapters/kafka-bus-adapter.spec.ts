@@ -5,6 +5,7 @@ import { KafkaBusAdapter } from '../../src/bus-adapters/kafka-bus.adapter';
 import { IBusAdapter } from '../../src/interfaces/bus/bus-adapter.interface';
 import * as loadPackage from '../../src/utils/load-package.util';
 import { Kafka } from './mocks/kafkajs.mock';
+import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
 
 describe('kafka bus adapter', function () {
 
@@ -23,7 +24,7 @@ describe('kafka bus adapter', function () {
         before(async () => {
             sandbox = sinon.createSandbox();
             sandbox.stub(loadPackage, 'loadPackage').returns({ Kafka });
-            const adapter = new KafkaBusAdapter();
+            const adapter = new KafkaBusAdapter(new CraftsLoggerMock());
             await adapter.onInit();
             kafkaAdapter = adapter;
         })

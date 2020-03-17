@@ -10,6 +10,11 @@ import { MICROSERVICE_CONFIG_PROVIDER } from '../../src/config/constants.config'
 import { IBusAdapter, ICommandHandler } from '../../src/interfaces';
 import { ITransferData } from '../../src/interfaces/transfer-data';
 import { TransferDataDto } from '../../src/interfaces/transfer-data-dto.interface';
+import { ModuleRef } from '@nestjs/core';
+import { Type } from '@nestjs/common';
+import { Class } from '../../src/types';
+import { CraftsLogger } from '../../src/logger/services/logger.service';
+import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
 
 describe('Command  Bus', () => {
   const sandbox = sinon.createSandbox();
@@ -43,7 +48,7 @@ describe('Command  Bus', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      providers: [CommandBus, TestCommandHandler, ExplorerService, configProvider],
+      providers: [CommandBus, TestCommandHandler, ExplorerService, configProvider, TestBusAdapter, { provide: 'CraftsLogger', useClass: CraftsLoggerMock }],
     }).compile();
 
     commandBus = module.get<CommandBus>(CommandBus);
@@ -91,11 +96,6 @@ describe('Command  Bus', () => {
     chai.expect(handle.calledOnce).to.be.true;
     chai.expect(handle.getCall(0).args[0]).deep.equal(data);
     chai.expect(publish.calledOnce).to.be.true;
-    chai.expect(publish.getCall(0).args[0]).deep.equal({
-      ...data,
-      context: 'addapptables-saga',
-      action: 'saga-event',
-    });
   });
 
 });

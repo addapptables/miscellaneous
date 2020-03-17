@@ -1,20 +1,20 @@
-import { Logger } from '@nestjs/common';
 import { Subject } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { IOnInit } from '../interfaces';
+import { CraftsLogger } from '../logger/services/logger.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class LocalBusAdapter implements IBusAdapter, IOnInit {
 
   static instance: LocalBusAdapter;
 
   private bus: Subject<ITransferData<TransferDataDto>>;
 
-  private logger: Logger;
-
-  constructor() {
+  constructor(private readonly logger: CraftsLogger) {
     if (!LocalBusAdapter.instance) {
       LocalBusAdapter.instance = this;
       this.bus = new Subject();
@@ -23,7 +23,7 @@ export class LocalBusAdapter implements IBusAdapter, IOnInit {
   }
 
   onInit(): void | Promise<void> {
-    this.logger = new Logger(LocalBusAdapter.name);
+    this.logger.setContext(LocalBusAdapter.name);
   }
 
   publish(data: ITransferData<TransferDataDto>): void {

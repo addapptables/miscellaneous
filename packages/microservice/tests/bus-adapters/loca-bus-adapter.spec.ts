@@ -1,7 +1,9 @@
 import * as chai from 'chai';
 import { LocalBusAdapter } from '../../src/bus-adapters/local-bus.adapter';
+import { CraftsLogger } from '../../src/logger/services/logger.service';
+import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
 
-describe.only('local bus adapter', () => {
+describe('local bus adapter', () => {
 
     const testData = {
         action: 'test-action',
@@ -12,7 +14,7 @@ describe.only('local bus adapter', () => {
     let localAdapter: LocalBusAdapter;
 
     before(() => {
-        localAdapter = new LocalBusAdapter();
+        localAdapter = new LocalBusAdapter(new CraftsLoggerMock());
         localAdapter.onInit();
     })
 

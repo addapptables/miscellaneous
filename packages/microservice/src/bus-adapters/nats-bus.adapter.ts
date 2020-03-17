@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { fromEvent, merge } from 'rxjs';
 import { map, first } from 'rxjs/operators';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
@@ -7,16 +6,18 @@ import { ISetOptions } from '../interfaces/set-options.interface';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { loadPackage } from '../utils/load-package.util';
+import { CraftsLogger } from '../logger/services/logger.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class NatsBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
     private readonly natsPackage: any = {};
-    private readonly logger: Logger;
     private options: any = {};
     private nats: any;
 
-    constructor() {
-        this.logger = new Logger(NatsBusAdapter.name);
+    constructor(private readonly logger: CraftsLogger) {
+        logger.setContext(NatsBusAdapter.name);
         this.natsPackage = loadPackage('nats', NatsBusAdapter.name);
     }
 

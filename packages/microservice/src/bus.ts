@@ -8,18 +8,20 @@ import { IHandler, IOnInit } from './interfaces';
 import { ITransferData } from './interfaces/transfer-data';
 import { TransferDataDto } from './interfaces/transfer-data-dto.interface';
 import { InitializeAdapterBus } from './services/initialize-adapter-bus.service';
+import { CraftsLogger } from './logger/services/logger.service';
 
 export abstract class Bus implements IOnInit, OnModuleDestroy {
 
-  private readonly logger: Logger;
+  protected readonly microserviceOptions: MicroserviceOptions
+
+  protected logger: CraftsLogger;
 
   protected adapter: IBusAdapter;
 
-  protected readonly microserviceOptions: MicroserviceOptions
-
-  constructor(protected readonly moduleRef: ModuleRef) {
+  constructor(
+    protected readonly moduleRef: ModuleRef
+  ) {
     this.microserviceOptions = this.moduleRef.get(MICROSERVICE_CONFIG_PROVIDER);
-    this.logger = new Logger(Bus.name);
   }
 
   abstract publish(data: ITransferData<TransferDataDto>): any;
@@ -31,12 +33,14 @@ export abstract class Bus implements IOnInit, OnModuleDestroy {
   protected abstract subscribe(handle: IHandler): (data: any) => Promise<any>;
 
   async onInit(): Promise<void> {
+    this.logger = await this.moduleRef.resolve<CraftsLogger>(CraftsLogger, undefined, { strict: false });
+    this.logger.setContext(Bus.name);
     await this.resolveAdapter();
     await this.registerHandlers();
   }
 
   protected async resolveAdapter(): Promise<void> {
-    const adapterInstance = await (new InitializeAdapterBus(this.microserviceOptions))
+    const adapterInstance = await (new InitializeAdapterBus(this.microserviceOptions, this.moduleRef))
       .init(this.microserviceOptions.adapter.adapterConfig);
 
     this.adapter = adapterInstance;

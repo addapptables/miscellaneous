@@ -10,6 +10,7 @@ import { MICROSERVICE_CONFIG_PROVIDER } from '../../src/config/constants.config'
 import { IBusAdapter, IQueryHandler } from '../../src/interfaces';
 import { ITransferData } from '../../src/interfaces/transfer-data';
 import { TransferDataDto } from '../../src/interfaces/transfer-data-dto.interface';
+import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
 
 describe('Query  Bus', () => {
   const sandbox = sinon.createSandbox();
@@ -43,7 +44,7 @@ describe('Query  Bus', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      providers: [QueryBus, TestQueryHandler, ExplorerService, configProvider],
+      providers: [QueryBus, TestQueryHandler, ExplorerService, configProvider, TestBusAdapter, { provide: 'CraftsLogger', useClass: CraftsLoggerMock }],
     }).compile();
 
     queryBus = module.get<QueryBus>(QueryBus);
@@ -91,11 +92,6 @@ describe('Query  Bus', () => {
     chai.expect(handle.calledOnce).to.be.true;
     chai.expect(handle.getCall(0).args[0]).deep.equal(data);
     chai.expect(publish.calledOnce).to.be.true;
-    chai.expect(publish.getCall(0).args[0]).deep.equal({
-      ...data,
-      context: 'addapptables-saga',
-      action: 'saga-event',
-    });
   });
 
 });
