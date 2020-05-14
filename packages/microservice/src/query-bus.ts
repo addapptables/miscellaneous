@@ -4,14 +4,17 @@ import { Bus } from './bus';
 import { IQueryHandler } from './interfaces/queries/query-handler.interface';
 import { IQuery } from './interfaces/queries/query.interface';
 import { IQueryDto } from './interfaces/queries/query-dto-interface';
-import { QUERY_HANDLER_METADATA } from './config';
+import {
+  QUERY_HANDLER_METADATA,
+  BROKER_CONTEXT,
+  BROKER_ACTION,
+} from './config';
 import { ExplorerService } from './services/explore.service';
 import { IHandler } from './interfaces';
 import { Class } from './types';
 
 @Injectable()
 export class QueryBus extends Bus {
-
   constructor(
     private readonly explorerService: ExplorerService,
     moduleRef: ModuleRef
@@ -28,30 +31,24 @@ export class QueryBus extends Bus {
     handlers.forEach(this.registerHandler);
   }
 
-  protected reflectName(handler: Type<IQueryHandler<IQuery<IQueryDto>>>): Class<IQuery<IQueryDto>> {
+  protected reflectName(
+    handler: Type<IQueryHandler<IQuery<IQueryDto>>>
+  ): Class<IQuery<IQueryDto>> {
     return Reflect.getMetadata(QUERY_HANDLER_METADATA, handler);
   }
 
-  protected subscribe = (handle: IHandler<any>): (data: any) => Promise<any> =>
-    async (data: any): Promise<any> => {
-      const context = 'addapptables-saga';
-      const action = 'saga-event';
-      let eventData = { ...data, action, context };
-
-      try {
-
-        await handle.handle(data);
-
-      } catch (error) {
-
-        eventData = { ...eventData, error: error.message };
-
-      } finally {
-
-        await this.adapter.publish(eventData);
-
-      }
-
+  protected subscribe = (
+    handle: IHandler<any>
+  ): ((data: any) => Promise<any>) => async (data: any): Promise<any> => {
+    const context = BROKER_CONTEXT;
+    const action = BROKER_ACTION;
+    try {
+      const result = await handle.handle(data);
+      const eventData = { data: result, cid: data.cid, action, context };
+      await this.adapter.publish(eventData);
+    } catch (error) {
+      let eventData = { ...data, action, context, error: error.message };
+      await this.adapter.publish(eventData);
     }
-
+  };
 }

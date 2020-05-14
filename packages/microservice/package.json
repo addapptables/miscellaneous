@@ -1,6 +1,6 @@
 {
   "name": "@addapptables/microservice",
-  "version": "0.0.1",
+  "version": "0.0.1-0",
   "description": "addapptables microservice",
   "author": "development@addapptables.com",
   "homepage": "https://github.com/addapptables/miscellaneous#readme",
@@ -29,10 +29,7 @@
   },
   "dependencies": {
     "ramda": "^0.26.1",
-    "uuid": "^3.4.0",
-    "@nestjs/common": "^6.10.14",
-    "@nestjs/core": "^6.10.14",
-    "reflect-metadata": "^0.1.13"
+    "uuid": "^3.4.0"
   },
   "peerDependencies": {
     "@nestjs/common": "^6.10.14",

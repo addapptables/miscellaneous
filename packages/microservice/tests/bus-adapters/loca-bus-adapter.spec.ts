@@ -1,6 +1,11 @@
 import * as chai from 'chai';
 import { LocalBusAdapter } from '../../src/bus-adapters/local-bus.adapter';
+<<<<<<< HEAD
+import { CraftsLogger } from '../../src/logger/services/logger.service';
+import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
+=======
 import { IBusAdapter } from '../../src/interfaces/bus/bus-adapter.interface';
+>>>>>>> master
 
 describe('local bus adapter', () => {
 
@@ -10,6 +15,16 @@ describe('local bus adapter', () => {
         data: { id: '' },
     };
 
+<<<<<<< HEAD
+    let localAdapter: LocalBusAdapter;
+
+    before(() => {
+        localAdapter = new LocalBusAdapter(new CraftsLoggerMock());
+        localAdapter.onInit();
+    })
+
+    after(() => {
+=======
     let localAdapter: IBusAdapter;
 
     beforeEach(() => {
@@ -17,6 +32,7 @@ describe('local bus adapter', () => {
     })
 
     afterEach(() => {
+>>>>>>> master
         localAdapter.close();
     })
 

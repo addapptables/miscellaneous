@@ -12,7 +12,7 @@ export interface IManagerAdapterBusWithSagaConfig<T = any> {
 
 export interface IAdapterBusSagaConfig<T = any> {
   config: T;
-  events: Class<IEvent<IEventDto>>[]
+  events: Class<IEvent<IEventDto>>[];
 }
 
 export interface IAdapterBusConfig<T = any> {
@@ -25,15 +25,20 @@ export interface IManagerAdapterBusBuild {
   build(): IAdapterBusConfig;
 }
 
-export class ManagerAdapterBus<T = any> implements IManagerAdapterBusWithConfig<T>, IManagerAdapterBusWithSagaConfig<T>, IManagerAdapterBusBuild {
-
+export class ManagerAdapterBus<T = any>
+  implements
+    IManagerAdapterBusWithConfig<T>,
+    IManagerAdapterBusWithSagaConfig<T>,
+    IManagerAdapterBusBuild {
   private adapterConfig: T;
 
   private adapterBrokerConfig: T;
 
-  private constructor(private readonly prototype: Class<IBusAdapter>) { }
+  private constructor(private readonly prototype: Class<IBusAdapter>) {}
 
-  static getInstance<T = any>(prototype: Class<IBusAdapter>): IManagerAdapterBusWithConfig {
+  static getInstance<T = any>(
+    prototype: Class<IBusAdapter>
+  ): IManagerAdapterBusWithConfig {
     return new ManagerAdapterBus<T>(prototype);
   }
 
@@ -54,5 +59,4 @@ export class ManagerAdapterBus<T = any> implements IManagerAdapterBusWithConfig<
       adapterBrokerConfig: this.adapterBrokerConfig,
     };
   }
-
 }

@@ -3,6 +3,10 @@ import * as sinon from 'sinon';
 import { RabbitMQBusAdapter } from '../../src/bus-adapters/rabbitmq-bus.adapter';
 import * as loadPackage from '../../src/utils/load-package.util';
 import { ITransferData } from '../../src/interfaces/transfer-data';
+<<<<<<< HEAD
+import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
+=======
+>>>>>>> master
 
 describe('RabbitMQ Bus Adapter', () => {
   const sandbox = sinon.createSandbox();
@@ -27,7 +31,11 @@ describe('RabbitMQ Bus Adapter', () => {
 
     sandbox.stub(loadPackage, 'loadPackage').returns({ connection });
 
+<<<<<<< HEAD
+    rabbitMQBusAdapter = new RabbitMQBusAdapter(new CraftsLoggerMock());
+=======
     rabbitMQBusAdapter = new RabbitMQBusAdapter();
+>>>>>>> master
   });
 
   afterEach(() => {

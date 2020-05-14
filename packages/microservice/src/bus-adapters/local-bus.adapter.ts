@@ -1,19 +1,28 @@
-import { Logger } from '@nestjs/common';
-import { Subject } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
-import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
-import { ITransferData } from '../interfaces/transfer-data';
-import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
+import { Subject } from "rxjs";
+import { filter, tap } from "rxjs/operators";
+import { IBusAdapter } from "../interfaces/bus/bus-adapter.interface";
+import { ITransferData } from "../interfaces/transfer-data";
+import { TransferDataDto } from "../interfaces/transfer-data-dto.interface";
+import { IOnInit } from "../interfaces";
+import { CraftsLogger } from "../logger/services/logger.service";
+import { Injectable } from "@nestjs/common";
 
-export class LocalBusAdapter implements IBusAdapter {
+@Injectable()
+export class LocalBusAdapter implements IBusAdapter, IOnInit {
+  static instance: LocalBusAdapter;
 
   private bus: Subject<ITransferData<TransferDataDto>>;
 
-  private readonly logger: Logger;
+  constructor(private readonly logger: CraftsLogger) {
+    if (!LocalBusAdapter.instance) {
+      LocalBusAdapter.instance = this;
+      this.bus = new Subject();
+    }
+    return LocalBusAdapter.instance;
+  }
 
-  constructor() {
-    this.bus = new Subject();
-    this.logger = new Logger(LocalBusAdapter.name);
+  onInit(): void | Promise<void> {
+    this.logger.setContext(LocalBusAdapter.name);
   }
 
   publish(data: ITransferData<TransferDataDto>): void {
@@ -21,23 +30,32 @@ export class LocalBusAdapter implements IBusAdapter {
     this.bus.next(data);
   }
 
-  async subscribe(handle: Function, data: ITransferData<TransferDataDto>): Promise<void> {
+  subscribe(handle: Function, data: ITransferData<TransferDataDto>): void {
     const internalHandle = async (msg: ITransferData<TransferDataDto>) => {
       try {
         await handle(msg);
         this.logger.debug({ ...msg, receivedData: true }, msg.context);
       } catch (error) {
-        this.logger.error({ message: error.message, msg }, LocalBusAdapter.name, msg.context);
+        this.logger.error(
+          { message: error.message, msg },
+          LocalBusAdapter.name,
+          msg.context
+        );
       }
-    }
-    this.bus.asObservable().pipe(
-      filter(filter => filter.action === data.action && filter.context === data.context),
-      tap(internalHandle)
-    ).subscribe();
+    };
+    this.bus
+      .asObservable()
+      .pipe(
+        filter(
+          (filter) =>
+            filter.action === data.action && filter.context === data.context
+        ),
+        tap(internalHandle)
+      )
+      .subscribe();
   }
 
   close() {
     this.bus.complete();
   }
-
 }

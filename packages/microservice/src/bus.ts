@@ -1,4 +1,5 @@
 import { ModuleRef } from '@nestjs/core';
+import { OnModuleDestroy, Logger } from '@nestjs/common';
 import { Class } from './types';
 import { IBusAdapter } from './interfaces/bus/bus-adapter.interface';
 import { MicroserviceOptions } from './interfaces/microservice-options.interface';
@@ -7,13 +8,14 @@ import { IHandler, IOnInit } from './interfaces';
 import { ITransferData } from './interfaces/transfer-data';
 import { TransferDataDto } from './interfaces/transfer-data-dto.interface';
 import { InitializeAdapterBus } from './services/initialize-adapter-bus.service';
-import { OnModuleDestroy } from '@nestjs/common';
+import { CraftsLogger } from './logger/services/logger.service';
 
 export abstract class Bus implements IOnInit, OnModuleDestroy {
+  protected readonly microserviceOptions: MicroserviceOptions;
+
+  protected logger: CraftsLogger;
 
   protected adapter: IBusAdapter;
-
-  protected readonly microserviceOptions: MicroserviceOptions
 
   constructor(protected readonly moduleRef: ModuleRef) {
     this.microserviceOptions = this.moduleRef.get(MICROSERVICE_CONFIG_PROVIDER);
@@ -23,18 +25,28 @@ export abstract class Bus implements IOnInit, OnModuleDestroy {
 
   protected abstract registerHandlers(): void;
 
-  protected abstract reflectName(handler: Class<IHandler>): Class<ITransferData<TransferDataDto>>;
+  protected abstract reflectName(
+    handler: Class<IHandler>
+  ): Class<ITransferData<TransferDataDto>>;
 
   protected abstract subscribe(handle: IHandler): (data: any) => Promise<any>;
 
   async onInit(): Promise<void> {
+    this.logger = await this.moduleRef.resolve<CraftsLogger>(
+      CraftsLogger,
+      undefined,
+      { strict: false }
+    );
+    this.logger.setContext(Bus.name);
     await this.resolveAdapter();
     await this.registerHandlers();
   }
 
   protected async resolveAdapter(): Promise<void> {
-    const adapterInstance = await (new InitializeAdapterBus(this.microserviceOptions))
-      .init(this.microserviceOptions.adapter.adapterConfig);
+    const adapterInstance = await new InitializeAdapterBus(
+      this.microserviceOptions,
+      this.moduleRef
+    ).init(this.microserviceOptions.adapter.adapterConfig);
 
     this.adapter = adapterInstance;
   }
@@ -49,10 +61,10 @@ export abstract class Bus implements IOnInit, OnModuleDestroy {
     const Target = this.reflectName(handler);
     const data = new Target();
     this.adapter.subscribe(this.subscribe(instance), data);
+    this.logger.debug({ data }, 'RegisterHandler');
   };
 
   onModuleDestroy() {
     this.adapter.close();
   }
-
 }

@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import * as R from 'ramda';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { IOnInit } from '../interfaces/lifecycles';
@@ -6,18 +5,19 @@ import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { ISetOptions } from '../interfaces/set-options.interface';
 import { loadPackage } from '../utils/load-package.util';
+import { CraftsLogger } from '../logger/services/logger.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
-
   private options: any = {};
-  private readonly logger: Logger;
   private readonly rabbitmqPackage: any;
   private rabbitmq: any;
   private pubChannel: any;
   private subChannel: any;
 
-  constructor() {
-    this.logger = new Logger(RabbitMQBusAdapter.name);
+  constructor(private readonly logger: CraftsLogger) {
+    logger.setContext(RabbitMQBusAdapter.name);
     this.rabbitmqPackage = loadPackage('amqplib', RabbitMQBusAdapter.name);
   }
 
@@ -27,22 +27,36 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
     this.pubChannel = await this.rabbitmq.createChannel();
   }
 
-  async publish(data: ITransferData<TransferDataDto>, options?: any): Promise<void> {
+  async publish(
+    data: ITransferData<TransferDataDto>,
+    options?: any
+  ): Promise<void> {
     options = options || {};
     const { action, context } = data;
     const exchange = R.or(context, this.options.exchange);
     const type = R.or(this.options.type, 'topic');
 
-    await this.pubChannel.assertExchange(exchange, type, this.exchangeDefault(options.exchange || {}))
-      .then(() => this.pubChannel.publish(
+    await this.pubChannel
+      .assertExchange(
         exchange,
-        action,
-        new Buffer(JSON.stringify(data)),
-        this.publishDefault(options.publish || {})
-      ));
+        type,
+        this.exchangeDefault(options.exchange || {})
+      )
+      .then(() =>
+        this.pubChannel.publish(
+          exchange,
+          action,
+          Buffer.from(JSON.stringify(data)),
+          this.publishDefault(options.publish || {})
+        )
+      );
   }
 
-  async subscribe(handle: Function, data: ITransferData<TransferDataDto>, options?: any): Promise<void> {
+  async subscribe(
+    handle: Function,
+    data: ITransferData<TransferDataDto>,
+    options?: any
+  ): Promise<void> {
     options = options || {};
     const { action, context } = data;
     const exchange = R.or(context, this.options.exchange);
@@ -53,10 +67,26 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
     this.subChannel.prefetch(R.or(options.prefetch, prefetch));
 
-    await this.subChannel.assertExchange(exchange, type, this.exchangeDefault(options.exchange || {}))
-      .then(() => this.subChannel.assertQueue(queue, this.queueDefault(options.queue || {})))
+    await this.subChannel
+      .assertExchange(
+        exchange,
+        type,
+        this.exchangeDefault(options.exchange || {})
+      )
+      .then(() =>
+        this.subChannel.assertQueue(
+          queue,
+          this.queueDefault(options.queue || {})
+        )
+      )
       .then(() => this.subChannel.bindQueue(queue, exchange, action))
-      .then(() => this.subChannel.consume(queue, this.subscribeHandle(handle), this.subscribeDefault(options.subscribe || {})));
+      .then(() =>
+        this.subChannel.consume(
+          queue,
+          this.subscribeHandle(handle),
+          this.subscribeDefault(options.subscribe || {})
+        )
+      );
   }
 
   private subscribeHandle = (handle: Function) => async (message) => {
@@ -67,7 +97,7 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
       this.logger.error('subscribe handle:', error);
       this.subChannel.nack(message);
     }
-  }
+  };
 
   setOptions(options: any): void {
     this.options = options;
@@ -96,5 +126,4 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   private publishDefault = R.mergeDeepRight({
     persistent: true,
   });
-
 }

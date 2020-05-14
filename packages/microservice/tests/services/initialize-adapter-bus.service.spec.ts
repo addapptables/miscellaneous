@@ -5,6 +5,12 @@ import { MicroserviceOptions, IBusAdapter, ISetOptions, IOnInit } from '../../sr
 import { ITransferData } from '../../src/interfaces/transfer-data';
 import { TransferDataDto } from '../../src/interfaces/transfer-data-dto.interface';
 import { BusConfigException } from '../../src/exceptions';
+<<<<<<< HEAD
+import { ModuleRef } from '@nestjs/core';
+import { Class } from '../../src/types';
+import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
+=======
+>>>>>>> master
 
 
 describe('Initialize Adapter Bus Service', () => {
@@ -16,11 +22,24 @@ describe('Initialize Adapter Bus Service', () => {
       close(): void | Promise<void> { }
     }
 
+<<<<<<< HEAD
+    class TestModuleRef {
+      resolve(type: Class<any>) {
+        return new type(new CraftsLoggerMock());
+      }
+    }
+
+=======
+>>>>>>> master
     const initializeAdapterBusOptions: MicroserviceOptions = {
       adapter: { adapterPrototype: TestBusAdapter, adapterConfig: {} },
     }
 
+<<<<<<< HEAD
+    const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions, new TestModuleRef() as ModuleRef);
+=======
     const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions);
+>>>>>>> master
 
     const adapterInstance = await initializeAdapterBusInstance.init();
     chai.expect(adapterInstance instanceof TestBusAdapter).to.be.true;
@@ -34,6 +53,15 @@ describe('Initialize Adapter Bus Service', () => {
       setOptions(options: any): void { }
     }
 
+<<<<<<< HEAD
+    class TestModuleRef {
+      resolve(type: Class<any>) {
+        return new type(new CraftsLoggerMock());
+      }
+    }
+
+=======
+>>>>>>> master
     sinon.stub(TestBusAdapter.prototype, 'setOptions');
 
     const initializeAdapterBusOptions: MicroserviceOptions = {
@@ -41,7 +69,11 @@ describe('Initialize Adapter Bus Service', () => {
     }
 
     const adapterConfig = initializeAdapterBusOptions.adapter.adapterConfig;
+<<<<<<< HEAD
+    const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions, new TestModuleRef() as ModuleRef);
+=======
     const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions);
+>>>>>>> master
 
     const adapterInstance = await initializeAdapterBusInstance.init(adapterConfig);
     chai.expect(adapterInstance instanceof TestBusAdapter).to.be.true;
@@ -58,13 +90,26 @@ describe('Initialize Adapter Bus Service', () => {
       onInit(): void | Promise<void> { }
     }
 
+<<<<<<< HEAD
+    class TestModuleRef {
+      resolve(type: Class<any>) {
+        return new type(new CraftsLoggerMock());
+      }
+    }
+
+=======
+>>>>>>> master
     sinon.stub(TestBusAdapter.prototype, 'onInit');
 
     const initializeAdapterBusOptions: MicroserviceOptions = {
       adapter: { adapterPrototype: TestBusAdapter, adapterConfig: {} },
     }
 
+<<<<<<< HEAD
+    const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions, new TestModuleRef() as ModuleRef);
+=======
     const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions);
+>>>>>>> master
 
     const adapterInstance = await initializeAdapterBusInstance.init();
     chai.expect(adapterInstance instanceof TestBusAdapter).to.be.true;
@@ -82,6 +127,15 @@ describe('Initialize Adapter Bus Service', () => {
       onInit(): void | Promise<void> { }
     }
 
+<<<<<<< HEAD
+    class TestModuleRef {
+      resolve(type: Class<any>) {
+        return new type(new CraftsLoggerMock());
+      }
+    }
+
+=======
+>>>>>>> master
     sinon.stub(TestBusAdapter.prototype, 'setOptions');
     sinon.stub(TestBusAdapter.prototype, 'onInit');
 
@@ -90,7 +144,11 @@ describe('Initialize Adapter Bus Service', () => {
     }
 
     const adapterConfig = initializeAdapterBusOptions.adapter.adapterConfig;
+<<<<<<< HEAD
+    const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions, new TestModuleRef() as ModuleRef);
+=======
     const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions);
+>>>>>>> master
 
     const adapterInstance = await initializeAdapterBusInstance.init(adapterConfig);
     chai.expect(adapterInstance instanceof TestBusAdapter).to.be.true;
@@ -102,7 +160,16 @@ describe('Initialize Adapter Bus Service', () => {
   });
 
   it('should throw BusConfigException by adapter config', async () => {
+<<<<<<< HEAD
+    class TestModuleRef {
+      resolve(type: Class<any>) {
+        return new type(new CraftsLoggerMock());
+      }
+    }
+    const initializeAdapterBusInstance = new InitializeAdapterBus(<any>{}, new TestModuleRef() as ModuleRef);
+=======
     const initializeAdapterBusInstance = new InitializeAdapterBus(<any>{});
+>>>>>>> master
 
     await initializeAdapterBusInstance.init()
       .catch((error) => {
@@ -112,11 +179,23 @@ describe('Initialize Adapter Bus Service', () => {
   });
 
   it('should throw BusConfigException by adapter', async () => {
+<<<<<<< HEAD
+    class TestModuleRef {
+      resolve(type: Class<any>) {
+        return new type(new CraftsLoggerMock());
+      }
+    }
+=======
+>>>>>>> master
     const initializeAdapterBusOptions: MicroserviceOptions = {
       adapter: { adapterPrototype: null, adapterConfig: {} },
     }
 
+<<<<<<< HEAD
+    const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions, new TestModuleRef() as ModuleRef);
+=======
     const initializeAdapterBusInstance = new InitializeAdapterBus(initializeAdapterBusOptions);
+>>>>>>> master
 
     await initializeAdapterBusInstance.init()
       .catch((error) => {
