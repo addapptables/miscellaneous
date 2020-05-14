@@ -11,16 +11,13 @@ import { InitializeAdapterBus } from './services/initialize-adapter-bus.service'
 import { CraftsLogger } from './logger/services/logger.service';
 
 export abstract class Bus implements IOnInit, OnModuleDestroy {
-
-  protected readonly microserviceOptions: MicroserviceOptions
+  protected readonly microserviceOptions: MicroserviceOptions;
 
   protected logger: CraftsLogger;
 
   protected adapter: IBusAdapter;
 
-  constructor(
-    protected readonly moduleRef: ModuleRef
-  ) {
+  constructor(protected readonly moduleRef: ModuleRef) {
     this.microserviceOptions = this.moduleRef.get(MICROSERVICE_CONFIG_PROVIDER);
   }
 
@@ -28,20 +25,28 @@ export abstract class Bus implements IOnInit, OnModuleDestroy {
 
   protected abstract registerHandlers(): void;
 
-  protected abstract reflectName(handler: Class<IHandler>): Class<ITransferData<TransferDataDto>>;
+  protected abstract reflectName(
+    handler: Class<IHandler>
+  ): Class<ITransferData<TransferDataDto>>;
 
   protected abstract subscribe(handle: IHandler): (data: any) => Promise<any>;
 
   async onInit(): Promise<void> {
-    this.logger = await this.moduleRef.resolve<CraftsLogger>(CraftsLogger, undefined, { strict: false });
+    this.logger = await this.moduleRef.resolve<CraftsLogger>(
+      CraftsLogger,
+      undefined,
+      { strict: false }
+    );
     this.logger.setContext(Bus.name);
     await this.resolveAdapter();
     await this.registerHandlers();
   }
 
   protected async resolveAdapter(): Promise<void> {
-    const adapterInstance = await (new InitializeAdapterBus(this.microserviceOptions, this.moduleRef))
-      .init(this.microserviceOptions.adapter.adapterConfig);
+    const adapterInstance = await new InitializeAdapterBus(
+      this.microserviceOptions,
+      this.moduleRef
+    ).init(this.microserviceOptions.adapter.adapterConfig);
 
     this.adapter = adapterInstance;
   }
@@ -62,5 +67,4 @@ export abstract class Bus implements IOnInit, OnModuleDestroy {
   onModuleDestroy() {
     this.adapter.close();
   }
-
 }

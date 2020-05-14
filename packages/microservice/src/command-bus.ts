@@ -4,14 +4,17 @@ import { Bus } from './bus';
 import { ICommandHandler } from './interfaces/commands/command-handler.interface';
 import { ICommand } from './interfaces/commands/command.interface';
 import { ICommandDto } from './interfaces/commands/command-dto-interface';
-import { COMMAND_HANDLER_METADATA, BROKER_CONTEXT, BROKER_ACTION } from './config';
+import {
+  COMMAND_HANDLER_METADATA,
+  BROKER_CONTEXT,
+  BROKER_ACTION,
+} from './config';
 import { ExplorerService } from './services/explore.service';
 import { IHandler } from './interfaces';
 import { Class } from './types';
 
 @Injectable()
 export class CommandBus extends Bus {
-
   constructor(
     private readonly explorerService: ExplorerService,
     moduleRef: ModuleRef
@@ -28,22 +31,24 @@ export class CommandBus extends Bus {
     handlers.forEach(this.registerHandler);
   }
 
-  protected reflectName(handler: Type<ICommandHandler<ICommand<ICommandDto>>>): Class<ICommand<ICommandDto>> {
+  protected reflectName(
+    handler: Type<ICommandHandler<ICommand<ICommandDto>>>
+  ): Class<ICommand<ICommandDto>> {
     return Reflect.getMetadata(COMMAND_HANDLER_METADATA, handler);
   }
 
-  protected subscribe = (handle: IHandler<any>): (data: any) => Promise<any> =>
-    async (data: any): Promise<any> => {
-      const context = BROKER_CONTEXT;
-      const action = BROKER_ACTION;
-      try {
-        const result = await handle.handle(data);
-        const eventData = { data: result, cid: data.cid, action, context };
-        await this.adapter.publish(eventData);
-      } catch (error) {
-        let eventData = { ...data, action, context, error: error.message };
-        await this.adapter.publish(eventData);
-      }
+  protected subscribe = (
+    handle: IHandler<any>
+  ): ((data: any) => Promise<any>) => async (data: any): Promise<any> => {
+    const context = BROKER_CONTEXT;
+    const action = BROKER_ACTION;
+    try {
+      const result = await handle.handle(data);
+      const eventData = { data: result, cid: data.cid, action, context };
+      await this.adapter.publish(eventData);
+    } catch (error) {
+      let eventData = { ...data, action, context, error: error.message };
+      await this.adapter.publish(eventData);
     }
-
+  };
 }

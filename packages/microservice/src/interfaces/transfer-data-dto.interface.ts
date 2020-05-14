@@ -1,5 +1,4 @@
-
 export class TransferDataDto {
-    [propName: string]: any;
-    id?: any;
+  [propName: string]: any;
+  id?: any;
 }

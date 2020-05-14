@@ -1,15 +1,14 @@
-import { Subject } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
-import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
-import { ITransferData } from '../interfaces/transfer-data';
-import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
-import { IOnInit } from '../interfaces';
-import { CraftsLogger } from '../logger/services/logger.service';
-import { Injectable } from '@nestjs/common';
+import { Subject } from "rxjs";
+import { filter, tap } from "rxjs/operators";
+import { IBusAdapter } from "../interfaces/bus/bus-adapter.interface";
+import { ITransferData } from "../interfaces/transfer-data";
+import { TransferDataDto } from "../interfaces/transfer-data-dto.interface";
+import { IOnInit } from "../interfaces";
+import { CraftsLogger } from "../logger/services/logger.service";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class LocalBusAdapter implements IBusAdapter, IOnInit {
-
   static instance: LocalBusAdapter;
 
   private bus: Subject<ITransferData<TransferDataDto>>;
@@ -37,17 +36,26 @@ export class LocalBusAdapter implements IBusAdapter, IOnInit {
         await handle(msg);
         this.logger.debug({ ...msg, receivedData: true }, msg.context);
       } catch (error) {
-        this.logger.error({ message: error.message, msg }, LocalBusAdapter.name, msg.context);
+        this.logger.error(
+          { message: error.message, msg },
+          LocalBusAdapter.name,
+          msg.context
+        );
       }
-    }
-    this.bus.asObservable().pipe(
-      filter(filter => filter.action === data.action && filter.context === data.context),
-      tap(internalHandle)
-    ).subscribe();
+    };
+    this.bus
+      .asObservable()
+      .pipe(
+        filter(
+          (filter) =>
+            filter.action === data.action && filter.context === data.context
+        ),
+        tap(internalHandle)
+      )
+      .subscribe();
   }
 
   close() {
     this.bus.complete();
   }
-
 }

@@ -10,7 +10,6 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
-
   private options: any = {};
   private readonly rabbitmqPackage: any;
   private rabbitmq: any;
@@ -28,22 +27,36 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
     this.pubChannel = await this.rabbitmq.createChannel();
   }
 
-  async publish(data: ITransferData<TransferDataDto>, options?: any): Promise<void> {
+  async publish(
+    data: ITransferData<TransferDataDto>,
+    options?: any
+  ): Promise<void> {
     options = options || {};
     const { action, context } = data;
     const exchange = R.or(context, this.options.exchange);
     const type = R.or(this.options.type, 'topic');
 
-    await this.pubChannel.assertExchange(exchange, type, this.exchangeDefault(options.exchange || {}))
-      .then(() => this.pubChannel.publish(
+    await this.pubChannel
+      .assertExchange(
         exchange,
-        action,
-        Buffer.from(JSON.stringify(data)),
-        this.publishDefault(options.publish || {})
-      ));
+        type,
+        this.exchangeDefault(options.exchange || {})
+      )
+      .then(() =>
+        this.pubChannel.publish(
+          exchange,
+          action,
+          Buffer.from(JSON.stringify(data)),
+          this.publishDefault(options.publish || {})
+        )
+      );
   }
 
-  async subscribe(handle: Function, data: ITransferData<TransferDataDto>, options?: any): Promise<void> {
+  async subscribe(
+    handle: Function,
+    data: ITransferData<TransferDataDto>,
+    options?: any
+  ): Promise<void> {
     options = options || {};
     const { action, context } = data;
     const exchange = R.or(context, this.options.exchange);
@@ -54,10 +67,26 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
     this.subChannel.prefetch(R.or(options.prefetch, prefetch));
 
-    await this.subChannel.assertExchange(exchange, type, this.exchangeDefault(options.exchange || {}))
-      .then(() => this.subChannel.assertQueue(queue, this.queueDefault(options.queue || {})))
+    await this.subChannel
+      .assertExchange(
+        exchange,
+        type,
+        this.exchangeDefault(options.exchange || {})
+      )
+      .then(() =>
+        this.subChannel.assertQueue(
+          queue,
+          this.queueDefault(options.queue || {})
+        )
+      )
       .then(() => this.subChannel.bindQueue(queue, exchange, action))
-      .then(() => this.subChannel.consume(queue, this.subscribeHandle(handle), this.subscribeDefault(options.subscribe || {})));
+      .then(() =>
+        this.subChannel.consume(
+          queue,
+          this.subscribeHandle(handle),
+          this.subscribeDefault(options.subscribe || {})
+        )
+      );
   }
 
   private subscribeHandle = (handle: Function) => async (message) => {
@@ -68,7 +97,7 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
       this.logger.error('subscribe handle:', error);
       this.subChannel.nack(message);
     }
-  }
+  };
 
   setOptions(options: any): void {
     this.options = options;
@@ -97,5 +126,4 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   private publishDefault = R.mergeDeepRight({
     persistent: true,
   });
-
 }

@@ -5,7 +5,10 @@ import { IBusAdapter } from '../../src/interfaces/bus/bus-adapter.interface';
 import * as loadPackage from '../../src/utils/load-package.util';
 import { RedisBusAdapter } from '../../src/bus-adapters/redis-bus.adapter';
 import { Redis } from './mocks/redis.mock';
+<<<<<<< HEAD
 import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
+=======
+>>>>>>> master
 
 describe('redis bus adapter', function () {
 
@@ -24,7 +27,11 @@ describe('redis bus adapter', function () {
         before(async () => {
             sandbox = sinon.createSandbox();
             sandbox.stub(loadPackage, 'loadPackage').returns(new Redis());
+<<<<<<< HEAD
             const adapter = new RedisBusAdapter(new CraftsLoggerMock());
+=======
+            const adapter = new RedisBusAdapter();
+>>>>>>> master
             adapter.setOptions({ url: 'redis://localhost:6379' });
             await adapter.onInit();
             redisAdapter = adapter;

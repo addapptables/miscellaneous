@@ -6,10 +6,13 @@ import { ITransferData } from '../../src/interfaces/transfer-data';
 import { TransferDataDto } from '../../src/interfaces/transfer-data-dto.interface';
 import { InitializeAdapterBus } from '../../src/services/initialize-adapter-bus.service';
 import { BrokerProcess } from '../../src/services/broker/broker-process';
+<<<<<<< HEAD
 import { Class } from '../../src/types';
 import { ModuleRef } from '@nestjs/core';
 import { Type } from '@nestjs/common';
 import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
+=======
+>>>>>>> master
 
 describe('Broker manager', () => {
 
@@ -21,6 +24,7 @@ describe('Broker manager', () => {
     close(): void | Promise<void> { }
   }
 
+<<<<<<< HEAD
   class TestModuleRef extends ModuleRef {
 
     get<TInput = any, TResult = TInput>(typeOrToken: string | symbol | Type<TInput>, options?: { strict: boolean; }): TResult {
@@ -36,6 +40,8 @@ describe('Broker manager', () => {
     }
   }
 
+=======
+>>>>>>> master
   const brokerConfig = {
     adapter: {
       adapterPrototype: TestBusAdapter,
@@ -44,7 +50,11 @@ describe('Broker manager', () => {
   };
 
   before(() => {
+<<<<<<< HEAD
     broker = new BrokerService(brokerConfig, new TestModuleRef(undefined));
+=======
+    broker = new BrokerService(brokerConfig);
+>>>>>>> master
   });
 
   describe('should run life-cycle methods correctly', () => {

@@ -6,7 +6,6 @@ import { LoggerModule } from './logger';
 
 @Module({})
 export class MicroserviceModule {
-
   static withConfig(config: MicroserviceOptions): DynamicModule {
     const configProvider = {
       provide: MICROSERVICE_CONFIG_PROVIDER,
@@ -15,16 +14,9 @@ export class MicroserviceModule {
 
     return {
       module: MicroserviceCoreModule,
-      imports: [
-        LoggerModule,
-      ],
-      providers: [
-        configProvider,
-        config.adapter.adapterPrototype,
-      ],
-      exports: [
-        LoggerModule,
-      ],
-    }
+      imports: [LoggerModule],
+      providers: [configProvider, config.adapter.adapterPrototype],
+      exports: [LoggerModule],
+    };
   }
 }
