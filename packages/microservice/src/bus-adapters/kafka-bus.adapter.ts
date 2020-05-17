@@ -1,7 +1,7 @@
-import {
-  Consumer,
-  Producer,
-} from "@nestjs/common/interfaces/external/kafka-options.interface";
+// import {
+//   Consumer,
+//   Producer,
+// } from "@nestjs/common/interfaces/external/kafka-options.interface";
 import { IBusAdapter } from "../interfaces/bus/bus-adapter.interface";
 import { ITransferData } from "../interfaces/transfer-data";
 import { TransferDataDto } from "../interfaces/transfer-data-dto.interface";
@@ -20,8 +20,10 @@ let kafkaPackage: any = {};
 @Injectable()
 export class KafkaBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   private options: any = {};
-  private consumer: Consumer;
-  private producer: Producer;
+  // private consumer: Consumer;
+  // private producer: Producer;
+  private consumer: any;
+  private producer: any;
   private handles: Map<string, Function[]>;
 
   constructor(private readonly logger: CraftsLogger) {
@@ -50,9 +52,8 @@ export class KafkaBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
     );
 
     this.producer = kafka.producer(this.options.producer || {});
-    this.consumer = <Consumer>(
-      kafka.consumer(this.options.consumer || { groupId })
-    );
+    // this.consumer = <Consumer>(
+    this.consumer = <any>kafka.consumer(this.options.consumer || { groupId });
 
     await this.producer.connect();
     await this.consumer.connect();

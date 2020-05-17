@@ -1,4 +1,4 @@
-import { IClientPublishOptions } from "@nestjs/common/interfaces/external/mqtt-options.interface";
+// import { IClientPublishOptions } from "@nestjs/common/interfaces/external/mqtt-options.interface";
 import { fromEvent, merge } from "rxjs";
 import { map, first } from "rxjs/operators";
 import { IBusAdapter } from "../interfaces/bus/bus-adapter.interface";
@@ -69,14 +69,16 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
   async publish(
     data: ITransferData<TransferDataDto>,
-    options: IClientPublishOptions
+    // options: IClientPublishOptions
+    options: any
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const topic = `${data.context}-${data.action}`;
       this.client.publish(
         topic,
         JSON.stringify(data),
-        options || <IClientPublishOptions>{},
+        // options || <IClientPublishOptions>{},
+        options || <any>{},
         (error) => {
           if (error) {
             reject(error);
@@ -92,7 +94,8 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   async subscribe(
     handle: Function,
     data: ITransferData<TransferDataDto>,
-    options: IClientPublishOptions
+    // options: IClientPublishOptions
+    options: any
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const topic = `${data.context}-${data.action}`;
@@ -100,7 +103,8 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
       this.handles.set(topic, [...handles, handle]);
       this.client.subscribe(
         topic,
-        options || <IClientPublishOptions>{},
+        // options || <IClientPublishOptions>{},
+        options || <any>{},
         (error) => {
           if (error) {
             reject(error);

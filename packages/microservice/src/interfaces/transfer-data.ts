@@ -6,4 +6,5 @@ export interface ITransferData<T extends TransferDataDto> {
   data: T;
   cid?: string;
   error?: string;
+  code?: number;
 }
