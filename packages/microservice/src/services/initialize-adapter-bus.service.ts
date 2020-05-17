@@ -31,7 +31,6 @@ export class InitializeAdapterBus {
         'The Bus Adapter Prototype was not configured.'
       );
     }
-
     const adapterInstance: IBusAdapter = await this.module.resolve(
       AdapterPrototype,
       undefined,
@@ -45,7 +44,6 @@ export class InitializeAdapterBus {
     if (typeof adapterInstance[OnInit] === 'function') {
       await adapterInstance[OnInit]();
     }
-
     return adapterInstance;
   }
 }

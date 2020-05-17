@@ -2,19 +2,19 @@
 //   Consumer,
 //   Producer,
 // } from "@nestjs/common/interfaces/external/kafka-options.interface";
-import { IBusAdapter } from "../interfaces/bus/bus-adapter.interface";
-import { ITransferData } from "../interfaces/transfer-data";
-import { TransferDataDto } from "../interfaces/transfer-data-dto.interface";
-import { IOnInit } from "../interfaces/lifecycles";
-import { ISetOptions } from "../interfaces/set-options.interface";
-import { loadPackage } from "../utils/load-package.util";
+import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
+import { ITransferData } from '../interfaces/transfer-data';
+import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
+import { IOnInit } from '../interfaces/lifecycles';
+import { ISetOptions } from '../interfaces/set-options.interface';
+import { loadPackage } from '../utils/load-package.util';
 import {
   KAFKA_DEFAULT_CLIENT,
   KAFKA_DEFAULT_GROUP,
   KAFKA_DEFAULT_BROKER,
-} from "../config/constants.config";
-import { CraftsLogger } from "../logger/services/logger.service";
-import { Injectable } from "@nestjs/common";
+} from '../config/constants.config';
+import { CraftsLogger } from '../logger/services/logger.service';
+import { Injectable } from '@nestjs/common';
 
 let kafkaPackage: any = {};
 @Injectable()
@@ -29,8 +29,8 @@ export class KafkaBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   constructor(private readonly logger: CraftsLogger) {
     this.handles = new Map();
     logger.setContext(KafkaBusAdapter.name);
-    kafkaPackage = loadPackage("kafkajs", KafkaBusAdapter.name, () =>
-      require("kafkajs")
+    kafkaPackage = loadPackage('kafkajs', KafkaBusAdapter.name, () =>
+      require('kafkajs')
     );
   }
 
@@ -40,9 +40,9 @@ export class KafkaBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
   async onInit(): Promise<void> {
     const clientId =
-      (this.options.clientId || KAFKA_DEFAULT_CLIENT) + "-client";
+      (this.options.clientId || KAFKA_DEFAULT_CLIENT) + '-client';
     const brokers = this.options.brokers || [KAFKA_DEFAULT_BROKER];
-    const groupId = (this.options?.groupId || KAFKA_DEFAULT_GROUP) + "-client";
+    const groupId = (this.options?.groupId || KAFKA_DEFAULT_GROUP) + '-client';
 
     const kafka = new kafkaPackage.Kafka(
       Object.assign(this.options.client || {}, {
