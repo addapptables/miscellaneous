@@ -1,14 +1,14 @@
-import { IClientPublishOptions } from "@nestjs/common/interfaces/external/mqtt-options.interface";
-import { fromEvent, merge } from "rxjs";
-import { map, first } from "rxjs/operators";
-import { IBusAdapter } from "../interfaces/bus/bus-adapter.interface";
-import { IOnInit } from "../interfaces/lifecycles";
-import { ISetOptions } from "../interfaces/set-options.interface";
-import { ITransferData } from "../interfaces/transfer-data";
-import { TransferDataDto } from "../interfaces/transfer-data-dto.interface";
-import { loadPackage } from "../utils/load-package.util";
-import { CraftsLogger } from "../logger/services/logger.service";
-import { Injectable } from "@nestjs/common";
+// import { IClientPublishOptions } from "@nestjs/common/interfaces/external/mqtt-options.interface";
+import { fromEvent, merge } from 'rxjs';
+import { map, first } from 'rxjs/operators';
+import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
+import { IOnInit } from '../interfaces/lifecycles';
+import { ISetOptions } from '../interfaces/set-options.interface';
+import { ITransferData } from '../interfaces/transfer-data';
+import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
+import { loadPackage } from '../utils/load-package.util';
+import { CraftsLogger } from '../logger/services/logger.service';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
@@ -26,7 +26,7 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   constructor(private readonly logger: CraftsLogger) {
     this.handles = new Map();
     logger.setContext(MqttBusAdapter.name);
-    this.mqttPackage = loadPackage("mqtt", MqttBusAdapter.name);
+    this.mqttPackage = loadPackage('mqtt', MqttBusAdapter.name);
   }
 
   setOptions(options: { brokerUrl: string; clientOptions?: any }): void {
@@ -38,8 +38,8 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
       this.options.brokerUrl,
       this.options.clientOptions
     );
-    const onConnect = fromEvent<Function>(this.client, "connect");
-    const onError = fromEvent<Function>(this.client, "error").pipe(
+    const onConnect = fromEvent<Function>(this.client, 'connect');
+    const onError = fromEvent<Function>(this.client, 'error').pipe(
       map((error) => {
         throw error;
       })
@@ -49,7 +49,7 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   }
 
   private listenMessages() {
-    this.client.on("message", async (topic, payload) => {
+    this.client.on('message', async (topic, payload) => {
       const msg = <ITransferData<TransferDataDto>>(
         JSON.parse(payload.toString())
       );
@@ -69,14 +69,16 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
   async publish(
     data: ITransferData<TransferDataDto>,
-    options: IClientPublishOptions
+    // options: IClientPublishOptions
+    options: any
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const topic = `${data.context}-${data.action}`;
       this.client.publish(
         topic,
         JSON.stringify(data),
-        options || <IClientPublishOptions>{},
+        // options || <IClientPublishOptions>{},
+        options || <any>{},
         (error) => {
           if (error) {
             reject(error);
@@ -92,7 +94,8 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   async subscribe(
     handle: Function,
     data: ITransferData<TransferDataDto>,
-    options: IClientPublishOptions
+    // options: IClientPublishOptions
+    options: any
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const topic = `${data.context}-${data.action}`;
@@ -100,7 +103,8 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
       this.handles.set(topic, [...handles, handle]);
       this.client.subscribe(
         topic,
-        options || <IClientPublishOptions>{},
+        // options || <IClientPublishOptions>{},
+        options || <any>{},
         (error) => {
           if (error) {
             reject(error);

@@ -47,7 +47,13 @@ export class QueryBus extends Bus {
       const eventData = { data: result, cid: data.cid, action, context };
       await this.adapter.publish(eventData);
     } catch (error) {
-      let eventData = { ...data, action, context, error: error.message };
+      let eventData = {
+        ...data,
+        action,
+        context,
+        error: error.message,
+        code: error.code,
+      };
       await this.adapter.publish(eventData);
     }
   };

@@ -26,9 +26,11 @@ export class BrokerProcess implements IBrokerStart, IBrokerAdd {
       brokers.add(this.cid, (data: ITransferData<T>) => {
         // TODO: add logger
         try {
-          resolve(data);
+          if (!data.error) {
+            return resolve(data);
+          }
+          reject(data);
         } catch (error) {
-          // TODO: catch message with errors
           reject(error);
         }
       });

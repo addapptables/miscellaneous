@@ -6,13 +6,12 @@ import { QueryBus } from '../query-bus';
 
 @Injectable()
 export class InitializeMicroservice {
-
   constructor(
     private readonly eventBus: EventBus,
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly brokerService: BrokerService
-  ) { }
+  ) {}
 
   async init() {
     await this.eventBus.onInit();
@@ -20,5 +19,4 @@ export class InitializeMicroservice {
     await this.queryBus.onInit();
     await this.brokerService.onInit();
   }
-
 }

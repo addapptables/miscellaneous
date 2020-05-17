@@ -14,19 +14,14 @@ import { ExplorerService } from './services/explore.service';
     BrokerService,
     InitializeMicroservice,
   ],
-  exports: [
-    EventBus,
-    BrokerService,
-  ],
+  exports: [EventBus, BrokerService],
 })
 export class MicroserviceCoreModule implements OnModuleInit {
-
   constructor(
     private readonly initializeMicroservice: InitializeMicroservice
-  ) { }
+  ) {}
 
   async onModuleInit() {
     await this.initializeMicroservice.init();
   }
-
 }
