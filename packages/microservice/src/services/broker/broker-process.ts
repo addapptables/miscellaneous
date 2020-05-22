@@ -1,4 +1,4 @@
-import * as uuid from 'uuid/v4';
+import * as uuid from 'uuid';
 import { IBrokerStart } from '../../interfaces/broker/broker-start.interface';
 import { IBrokerAdd } from '../../interfaces/broker/broker-add.interface';
 import { IBusAdapter } from '../../interfaces';
@@ -12,7 +12,7 @@ export class BrokerProcess implements IBrokerStart, IBrokerAdd {
   private data: ITransferData<TransferDataDto>;
 
   constructor(private readonly adapter: IBusAdapter) {
-    this.cid = uuid();
+    this.cid = uuid.v4();
   }
 
   add(data: ITransferData<TransferDataDto>): IBrokerAdd {
