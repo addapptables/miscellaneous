@@ -22,7 +22,7 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   }
 
   async onInit(): Promise<void> {
-    this.rabbitmq = await this.rabbitmqPackage.connection(this.options.host);
+    this.rabbitmq = await this.rabbitmqPackage.connect(this.options.host);
     this.subChannel = await this.rabbitmq.createChannel();
     this.pubChannel = await this.rabbitmq.createChannel();
   }

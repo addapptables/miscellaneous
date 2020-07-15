@@ -1,7 +1,3 @@
-// import {
-//   Consumer,
-//   Producer,
-// } from "@nestjs/common/interfaces/external/kafka-options.interface";
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';

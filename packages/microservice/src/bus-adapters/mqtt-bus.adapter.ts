@@ -1,4 +1,3 @@
-// import { IClientPublishOptions } from "@nestjs/common/interfaces/external/mqtt-options.interface";
 import { fromEvent, merge } from 'rxjs';
 import { map, first } from 'rxjs/operators';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';

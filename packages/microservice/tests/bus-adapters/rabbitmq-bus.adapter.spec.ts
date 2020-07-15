@@ -3,15 +3,12 @@ import * as sinon from 'sinon';
 import { RabbitMQBusAdapter } from '../../src/bus-adapters/rabbitmq-bus.adapter';
 import * as loadPackage from '../../src/utils/load-package.util';
 import { ITransferData } from '../../src/interfaces/transfer-data';
-<<<<<<< HEAD
 import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
-=======
->>>>>>> master
 
 describe('RabbitMQ Bus Adapter', () => {
   const sandbox = sinon.createSandbox();
   let rabbitMQBusAdapter: RabbitMQBusAdapter;
-  let connection, createChannel, assertExchange, publish,
+  let connect, createChannel, assertExchange, publish,
     prefetch, assertQueue, bindQueue, consume, ack, close;
 
   beforeEach(() => {
@@ -27,15 +24,11 @@ describe('RabbitMQ Bus Adapter', () => {
       assertExchange, publish, prefetch,
       assertQueue, bindQueue, consume, ack,
     });
-    connection = sandbox.stub().returns({ createChannel, close });
+    connect = sandbox.stub().returns({ createChannel, close });
 
-    sandbox.stub(loadPackage, 'loadPackage').returns({ connection });
+    sandbox.stub(loadPackage, 'loadPackage').returns({ connect });
 
-<<<<<<< HEAD
     rabbitMQBusAdapter = new RabbitMQBusAdapter(new CraftsLoggerMock());
-=======
-    rabbitMQBusAdapter = new RabbitMQBusAdapter();
->>>>>>> master
   });
 
   afterEach(() => {
@@ -45,7 +38,7 @@ describe('RabbitMQ Bus Adapter', () => {
 
   it('should initialize the adapter correctly', async () => {
     await rabbitMQBusAdapter.onInit();
-    chai.expect(connection.calledOnce).to.be.true;
+    chai.expect(connect.calledOnce).to.be.true;
     chai.expect(createChannel.calledTwice).to.be.true;
   });
 
