@@ -5,10 +5,7 @@ import { IBusAdapter } from '../../src/interfaces/bus/bus-adapter.interface';
 import * as loadPackage from '../../src/utils/load-package.util';
 import { MqttBusAdapter } from '../../src/bus-adapters/mqtt-bus.adapter';
 import { Mqtt } from './mocks/mqtt.mock';
-<<<<<<< HEAD
 import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
-=======
->>>>>>> master
 
 describe('mqtt bus adapter', function () {
 
@@ -27,11 +24,7 @@ describe('mqtt bus adapter', function () {
         before(async () => {
             sandbox = sinon.createSandbox();
             sandbox.stub(loadPackage, 'loadPackage').returns(new Mqtt());
-<<<<<<< HEAD
             const adapter = new MqttBusAdapter(new CraftsLoggerMock());
-=======
-            const adapter = new MqttBusAdapter();
->>>>>>> master
             adapter.setOptions({ brokerUrl: 'mqtt://localhost:1234' });
             await adapter.onInit();
             mqttAdapter = adapter;

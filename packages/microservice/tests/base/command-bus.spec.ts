@@ -1,7 +1,6 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { CommandBus } from '../../src/command-bus';
 import { Command } from '../../src/command';
 import { CommandHandler } from '../../src/decorators/command-handler.decorator';
@@ -10,14 +9,7 @@ import { MICROSERVICE_CONFIG_PROVIDER } from '../../src/config/constants.config'
 import { IBusAdapter, ICommandHandler } from '../../src/interfaces';
 import { ITransferData } from '../../src/interfaces/transfer-data';
 import { TransferDataDto } from '../../src/interfaces/transfer-data-dto.interface';
-<<<<<<< HEAD
-import { ModuleRef } from '@nestjs/core';
-import { Type } from '@nestjs/common';
-import { Class } from '../../src/types';
-import { CraftsLogger } from '../../src/logger/services/logger.service';
 import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
-=======
->>>>>>> master
 
 describe('Command  Bus', () => {
   const sandbox = sinon.createSandbox();
@@ -51,15 +43,11 @@ describe('Command  Bus', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-<<<<<<< HEAD
       providers: [CommandBus, TestCommandHandler, ExplorerService, configProvider, TestBusAdapter, { provide: 'CraftsLogger', useClass: CraftsLoggerMock }],
-=======
-      providers: [CommandBus, TestCommandHandler, ExplorerService, configProvider],
->>>>>>> master
     }).compile();
 
     commandBus = module.get<CommandBus>(CommandBus);
-    await commandBus.onInit();
+    await commandBus.onInit(<any>{subscribe: () => {}, close: () => {}, publish: () => {}});
   });
 
   afterEach(async () => {
@@ -103,14 +91,6 @@ describe('Command  Bus', () => {
     chai.expect(handle.calledOnce).to.be.true;
     chai.expect(handle.getCall(0).args[0]).deep.equal(data);
     chai.expect(publish.calledOnce).to.be.true;
-<<<<<<< HEAD
-=======
-    chai.expect(publish.getCall(0).args[0]).deep.equal({
-      ...data,
-      context: 'addapptables-saga',
-      action: 'saga-event',
-    });
->>>>>>> master
   });
 
 });
