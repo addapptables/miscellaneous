@@ -48,7 +48,7 @@ describe('Event Bus', () => {
     }).compile();
 
     eventBus = module.get<EventBus>(EventBus);
-    await eventBus.onInit();
+    await eventBus.onInit(<any>{subscribe: () => {}, close: () => {}, publish: () => {}});
   });
 
   afterEach(async () => {

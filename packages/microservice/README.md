@@ -1,6 +1,6 @@
-# cqrs
+# Addapptables microservices with cqrs
 
-- cqrs is a library for nodejs oriented to microservices,
+- Addapptables microservices is a library for nodejs oriented to microservices,
 this library is made to work with [nestjs](https://docs.nestjs.com/)
 
 - [Example code](https://github.com/addapptables/example-service)
@@ -9,12 +9,17 @@ this library is made to work with [nestjs](https://docs.nestjs.com/)
 To get started, let's install the package through npm:
 
 ```
-npm i @addapptables/microservice --S
+npm i @addapptables/microservice
+```
+
+If you use rabbitmq install
+```
+npm i amqplib
 ```
 
 ## How to use
 
-- Configuration
+- Configuration rabbitmq
 ```typescript
 import { MicroserviceModule, ManagerAdapterBus, RabbitMQBusAdapter } from '@addapptables/microservice';
 @Module({
@@ -43,10 +48,11 @@ export class AppModule {}
 ```
 
 - Create commands
+
 ```typescript
 import { Command } from '@addapptables/microservice';
 
-export class ClassCommandModel implements ICommandDto, IEventDto {
+export class ClassCommandModel implements ICommandDto {
     id: string;
 }
 
@@ -62,29 +68,69 @@ export class CreateUserCommand extends Command<ClassCommandModel> {
 ```typescript
 import { ICommandHandler, CommandHandler, ICommand } from '@addapptables/cqrs';
 
-@CommandHandler({ context: 'context', action: 'action' })
+@CommandHandler(CreateUserCommand)
 export class CommandHandler implements ICommandHandler<ClassCommandModel> {
 
-    handle = async (command: ICommand<ClassCommandModel>): Promise<void> => {
-        // Save in event store
+    handle(event: ClassCommandModel): any {
+      console.log(event);
+      // call your domain service
     }
 
 }
 ```
 
-- Create event handlers
+- Create query
+
 ```typescript
-import { IEventHandler, IEvent, EventHandler } from '@addapptables/cqrs';
+export class ClassQueryModel implements IQueryDto {
+    id: string;
+}
 
-@EventHandler({ context: 'context', action: 'action' })
-export class ActionHandler implements IEventHandler<YourActionEvent> {
+export class CreateUserQuery extends Query<ClassQueryModel> {
+    public readonly action = 'action';
+    public readonly context = 'context';
 
-    handle = async ({ data }: IEvent<YourActionEvent>): Promise<void> => {
-        try {
-            console.log(data);
-        } catch (error) {
-            console.log('error', error);
-        }
+    constructor(public readonly data: ClassQueryModel) { super(data); }
+}
+```
+
+- Create query handlers
+```typescript
+@QueryHandler(ClassQueryModel)
+export class FindOneUserHandler implements IQueryHandler<ClassQueryModel> {
+
+  constructor(private readonly userService: UserDomainService) { }
+
+  handle(event: ClassQueryModel): any {
+    return this.userService.findOneByQuery(event.data);
+  }
+
+}
+```
+
+- Create events
+
+```typescript
+
+export class ClassEventModel implements IEventDto {
+    id: string;
+}
+
+export class UserCreatedEvent extends Command<ClassEventModel> {
+    public readonly action = 'action';
+    public readonly context = 'context';
+
+    constructor(public readonly data: ClassEventModel) { super(data); }
+}
+```
+
+```typescript
+@EventHandler(UserCreatedEvent)
+export class ActionHandler implements IEventHandler<UserCreatedEvent> {
+
+    handle(event: UserCreatedEvent): any {
+      console.log(event);
+      // call your domain service
     }
 
 }

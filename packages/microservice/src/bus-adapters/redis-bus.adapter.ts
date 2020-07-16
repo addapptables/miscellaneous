@@ -5,9 +5,9 @@ import { loadPackage } from '../utils/load-package.util';
 import { IOnInit } from '../interfaces/lifecycles';
 import { ISetOptions } from '../interfaces/set-options.interface';
 import { CraftsLogger } from '../logger/services/logger.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class RedisBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   private readonly redisPackage: any = {};
   private pub;

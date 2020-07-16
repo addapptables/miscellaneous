@@ -47,7 +47,7 @@ describe('Command  Bus', () => {
     }).compile();
 
     commandBus = module.get<CommandBus>(CommandBus);
-    await commandBus.onInit();
+    await commandBus.onInit(<any>{subscribe: () => {}, close: () => {}, publish: () => {}});
   });
 
   afterEach(async () => {

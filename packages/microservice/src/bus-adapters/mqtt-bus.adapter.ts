@@ -7,9 +7,9 @@ import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { loadPackage } from '../utils/load-package.util';
 import { CraftsLogger } from '../logger/services/logger.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   mqttPackage: any = {};
 
@@ -33,6 +33,7 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   }
 
   async onInit(): Promise<void> {
+    this.logger.verbose('init connection');
     this.client = this.mqttPackage.connect(
       this.options.brokerUrl,
       this.options.clientOptions
@@ -48,6 +49,7 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   }
 
   private listenMessages() {
+    this.logger.verbose('Listen messages');
     this.client.on('message', async (topic, payload) => {
       const msg = <ITransferData<TransferDataDto>>(
         JSON.parse(payload.toString())
@@ -71,6 +73,7 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
     // options: IClientPublishOptions
     options: any
   ): Promise<void> {
+    this.logger.verbose('Publish messages');
     return new Promise((resolve, reject) => {
       const topic = `${data.context}-${data.action}`;
       this.client.publish(
@@ -116,6 +119,7 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   }
 
   async close(): Promise<void> {
+    this.logger.verbose('close connection');
     return new Promise((resolve) => {
       this.client.end(true, {}, () => {
         resolve();

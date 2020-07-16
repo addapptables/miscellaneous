@@ -1,6 +1,6 @@
 import { Command, ICommandDto } from '../../';
 
-export class DataCommand implements ICommandDto {
+export interface DataCommand extends ICommandDto {
   id: any;
   name: string;
 }

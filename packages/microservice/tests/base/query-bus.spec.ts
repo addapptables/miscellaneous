@@ -48,7 +48,7 @@ describe('Query  Bus', () => {
     }).compile();
 
     queryBus = module.get<QueryBus>(QueryBus);
-    await queryBus.onInit();
+    await queryBus.onInit(<any>{subscribe: () => {}, close: () => {}, publish: () => {}});
   });
 
   afterEach(async () => {

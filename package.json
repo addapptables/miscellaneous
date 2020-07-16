@@ -1,6 +1,11 @@
 {
   "name": "root",
+  "version": "0.0.3-0",
   "private": false,
+  "license": "MIT",
+  "description": "addapptables microservice",
+  "author": "development@addapptables.com",
+  "homepage": "https://github.com/addapptables/miscellaneous#readme",
   "dependencies": {
     "@nestjs/common": "^7.0.11",
     "@nestjs/core": "^7.0.11",
@@ -33,5 +38,9 @@
     "ts-node": "^8.10.1",
     "tslint": "^6.1.2",
     "typescript": "^3.9.2"
-  }
+  },
+  "keywords": [
+    "addapptables",
+    "microservice"
+  ]
 }
