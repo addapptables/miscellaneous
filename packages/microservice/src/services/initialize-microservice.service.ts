@@ -31,6 +31,6 @@ export class InitializeMicroservice {
     await this.eventBus.onInit(adapterInstance);
     await this.commandBus.onInit(adapterInstance);
     await this.queryBus.onInit(adapterInstance);
-    await this.brokerService.onInit();
+    await this.brokerService.onInit(adapterInstance);
   }
 }
