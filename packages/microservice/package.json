@@ -1,8 +1,8 @@
 {
   "name": "@addapptables/microservice",
-  "version": "0.0.3-0",
+  "version": "1.0.0-0",
   "description": "addapptables microservice",
-  "author": "development@addapptables.com",
+  "author": "dev@addapptables.com",
   "homepage": "https://github.com/addapptables/miscellaneous#readme",
   "license": "MIT",
   "main": "dist/index.js",
