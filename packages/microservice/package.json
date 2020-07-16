@@ -30,12 +30,13 @@
   "dependencies": {
     "uuid": "^8.2.0",
     "reflect-metadata": "^0.1.13",
-    "bluebird": "^3.7.2"
+    "bluebird": "^3.7.2",
+    "ramda": "^0.27.0"
   },
   "peerDependencies": {
     "@nestjs/common": ">=7.0.0 <8.0.0",
     "@nestjs/core": ">=7.0.0 <8.0.0",
-    "rxjs": "^6.5.4"
+    "rxjs": ">=6.5.4 <7.0.0"
   },
   "devDependencies": {
     "@nestjs/testing": "^7.0.11",

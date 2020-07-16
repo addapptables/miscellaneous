@@ -7,7 +7,6 @@ import {
 } from '../interfaces';
 import { BusConfigException } from '../exceptions';
 import { ModuleRef } from '@nestjs/core';
-import { CraftsLogger } from '../logger/services/logger.service';
 
 export class InitializeAdapterBus {
   constructor(

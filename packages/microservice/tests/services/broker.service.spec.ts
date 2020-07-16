@@ -44,7 +44,7 @@ describe('Broker manager', () => {
   };
 
   before(() => {
-    broker = new BrokerService(brokerConfig, new TestModuleRef(undefined));
+    broker = new BrokerService();
   });
 
   describe('should run life-cycle methods correctly', () => {
@@ -55,7 +55,11 @@ describe('Broker manager', () => {
       subscribe = sandbox.spy();
       close = sandbox.spy();
       initializeAdapterBusInitMethod = sandbox.stub(InitializeAdapterBus.prototype, 'init')
-        .returns(<any>{ subscribe, close });
+        .returns(<any>{
+          subscribe: (subcribe, config, options) => { return subscribe(subcribe, config, options) },
+          close: () => { return close() },
+          publish: () => { }
+        });
     });
 
     afterEach(() => {
@@ -63,7 +67,8 @@ describe('Broker manager', () => {
     });
 
     it('should initialize broker correctly', async () => {
-      await broker.onInit();
+      const bus = initializeAdapterBusInitMethod();
+      await broker.onInit(bus);
 
       chai.expect(broker['adapterInstance'] instanceof TestBusAdapter);
       chai.expect(initializeAdapterBusInitMethod.calledOnce).to.true;
@@ -75,7 +80,8 @@ describe('Broker manager', () => {
     });
 
     it('should destroy broker connection correctly', async () => {
-      await broker.onInit();
+      const bus = initializeAdapterBusInitMethod();
+      await broker.onInit(bus);
       await broker.onModuleDestroy();
 
       chai.expect(close.calledOnce).to.true;
