@@ -1,37 +1,24 @@
-import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import {
-  MICROSERVICE_CONFIG_PROVIDER,
   BROKER_CONTEXT,
   BROKER_ACTION,
 } from '../../config/constants.config';
 import {
-  MicroserviceOptions,
   IBusAdapter,
-  IOnInit,
   IBrokerStart,
 } from '../../interfaces';
 import { Broker } from './broker';
 import { BrokerProcess } from './broker-process';
 import { ITransferData } from '../../interfaces/transfer-data';
 import { TransferDataDto } from '../../interfaces/transfer-data-dto.interface';
-import { InitializeAdapterBus } from '../initialize-adapter-bus.service';
-import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
-export class BrokerService implements IOnInit, OnModuleDestroy {
+export class BrokerService implements OnModuleDestroy {
   private adapterInstance: IBusAdapter;
 
-  constructor(
-    @Inject(MICROSERVICE_CONFIG_PROVIDER)
-    private readonly microserviceOptions: MicroserviceOptions,
-    private readonly moduleRef: ModuleRef
-  ) {}
+  constructor() {}
 
-  async onInit() {
-    const adapterInstance = await new InitializeAdapterBus(
-      this.microserviceOptions,
-      this.moduleRef
-    ).init(this.microserviceOptions.adapter.adapterBrokerConfig);
+  async onInit(adapterInstance: IBusAdapter) {
     const config = {
       context: BROKER_CONTEXT,
       action: BROKER_ACTION,

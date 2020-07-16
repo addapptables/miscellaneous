@@ -17,7 +17,7 @@ describe('Initialize Microservice Service', () => {
   const eventsBus: EventBus = <EventBus>{ onInit: (bus) => { } };
   const commandsBus: CommandBus = <CommandBus>{ onInit: (bus) => { } };
   const queryBus: QueryBus = <QueryBus>{ onInit: (bus) => { } };
-  const brokerService: BrokerService = <BrokerService>{ onInit: () => { } };
+  const brokerService: BrokerService = <BrokerService>{ onInit: (config) => { } };
   const moduleRef: ModuleRef = <ModuleRef>{
     get: (options) => { return { adapter: { adapterPrototype: new CraftsLoggerMock() } } }, resolve(type: Class<any>) {
       return <any>new CraftsLoggerMock();
