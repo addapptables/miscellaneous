@@ -6,9 +6,9 @@ import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
 import { ISetOptions } from '../interfaces/set-options.interface';
 import { loadPackage } from '../utils/load-package.util';
 import { CraftsLogger } from '../logger/services/logger.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   private options: any = {};
   private readonly rabbitmqPackage: any;
@@ -22,7 +22,8 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   }
 
   async onInit(): Promise<void> {
-    this.rabbitmq = await this.rabbitmqPackage.connection(this.options.host);
+    this.logger.verbose('init connection');
+    this.rabbitmq = await this.rabbitmqPackage.connect(this.options.host);
     this.subChannel = await this.rabbitmq.createChannel();
     this.pubChannel = await this.rabbitmq.createChannel();
   }
@@ -91,8 +92,10 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
 
   private subscribeHandle = (handle: Function) => async (message) => {
     try {
+      this.logger.verbose('handle message');
       await handle(JSON.parse(message.content.toString()));
       this.subChannel.ack(message);
+      this.logger.verbose('ack message');
     } catch (error) {
       this.logger.error('subscribe handle:', error);
       this.subChannel.nack(message);
@@ -104,6 +107,7 @@ export class RabbitMQBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   }
 
   async close(): Promise<void> {
+    this.logger.verbose('close connection');
     await this.rabbitmq.close();
   }
 

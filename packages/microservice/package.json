@@ -1,6 +1,6 @@
 {
   "name": "@addapptables/microservice",
-  "version": "0.0.2-0",
+  "version": "0.0.3-0",
   "description": "addapptables microservice",
   "author": "development@addapptables.com",
   "homepage": "https://github.com/addapptables/miscellaneous#readme",
@@ -28,25 +28,14 @@
     "url": "https://github.com/addapptables/miscellaneous/issues"
   },
   "dependencies": {
-    "@nestjs/common": "^7.0.11",
-    "@nestjs/core": "^7.0.11",
-    "@types/sinon": "^9.0.0",
-    "amqplib": "^0.5.5",
-    "bluebird": "^3.7.2",
-    "kafkajs": "^1.11.0",
-    "mqtt": "^4.0.1",
-    "nats": "^1.4.9",
-    "redis": "^3.0.2",
-    "ramda": "^0.27.0",
-    "uuid": "^8.0.0",
+    "uuid": "^8.2.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^6.5.5"
+    "bluebird": "^3.7.2"
   },
   "peerDependencies": {
-    "@nestjs/common": "^7.0.11",
-    "@nestjs/core": "^7.0.11",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^6.5.5"
+    "@nestjs/common": ">=7.0.0 <8.0.0",
+    "@nestjs/core": ">=7.0.0 <8.0.0",
+    "rxjs": "^6.5.4"
   },
   "devDependencies": {
     "@nestjs/testing": "^7.0.11",

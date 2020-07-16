@@ -4,13 +4,14 @@ import { Class } from './types';
 import { IBusAdapter } from './interfaces/bus/bus-adapter.interface';
 import { MicroserviceOptions } from './interfaces/microservice-options.interface';
 import { MICROSERVICE_CONFIG_PROVIDER } from './config/constants.config';
-import { IHandler, IOnInit } from './interfaces';
+import { IHandler } from './interfaces';
 import { ITransferData } from './interfaces/transfer-data';
 import { TransferDataDto } from './interfaces/transfer-data-dto.interface';
 import { InitializeAdapterBus } from './services/initialize-adapter-bus.service';
 import { CraftsLogger } from './logger/services/logger.service';
 
-export abstract class Bus implements IOnInit, OnModuleDestroy {
+export abstract class Bus implements OnModuleDestroy {
+  
   protected readonly microserviceOptions: MicroserviceOptions;
 
   protected logger: CraftsLogger;
@@ -31,14 +32,14 @@ export abstract class Bus implements IOnInit, OnModuleDestroy {
 
   protected abstract subscribe(handle: IHandler): (data: any) => Promise<any>;
 
-  async onInit(): Promise<void> {
+  async onInit(busAdapter: IBusAdapter): Promise<void> {
     this.logger = await this.moduleRef.resolve<CraftsLogger>(
       CraftsLogger,
       undefined,
       { strict: false }
     );
     this.logger.setContext(Bus.name);
-    await this.resolveAdapter();
+    this.adapter = busAdapter;
     await this.registerHandlers();
   }
 

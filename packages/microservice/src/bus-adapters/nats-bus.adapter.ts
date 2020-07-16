@@ -7,9 +7,9 @@ import { ITransferData } from "../interfaces/transfer-data";
 import { TransferDataDto } from "../interfaces/transfer-data-dto.interface";
 import { loadPackage } from "../utils/load-package.util";
 import { CraftsLogger } from "../logger/services/logger.service";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Scope } from "@nestjs/common";
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class NatsBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   private readonly natsPackage: any = {};
   private options: any = {};

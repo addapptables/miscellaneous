@@ -1,7 +1,3 @@
-// import {
-//   Consumer,
-//   Producer,
-// } from "@nestjs/common/interfaces/external/kafka-options.interface";
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { ITransferData } from '../interfaces/transfer-data';
 import { TransferDataDto } from '../interfaces/transfer-data-dto.interface';
@@ -14,10 +10,10 @@ import {
   KAFKA_DEFAULT_BROKER,
 } from '../config/constants.config';
 import { CraftsLogger } from '../logger/services/logger.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 
 let kafkaPackage: any = {};
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class KafkaBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
   private options: any = {};
   // private consumer: Consumer;
