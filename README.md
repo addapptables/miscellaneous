@@ -30,10 +30,6 @@ import { MicroserviceModule, ManagerAdapterBus, RabbitMQBusAdapter } from '@adda
         exchange: 'search-service',
         host: process.env.BUS_URL
       })
-      .withSagaConfig({
-        exchange: 'saga-search',
-        host: process.env.BUS_URL
-      })
       .build()
     })
   ],
