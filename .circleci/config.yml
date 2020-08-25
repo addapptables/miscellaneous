@@ -1,5 +1,13 @@
 version: 2
 
+general:
+  branches:
+    only:
+      - master # list of branches to build
+      - develop
+      - /feature-.*/
+      - /chore-.*/
+
 jobs:
   test:
     working_directory: ~/crafts
