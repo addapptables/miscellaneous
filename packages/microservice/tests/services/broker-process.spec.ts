@@ -4,6 +4,7 @@ import { head } from 'ramda';
 import { BrokerProcess } from '../../src/services/broker/broker-process';
 import { Broker } from '../../src/services/broker/broker';
 import { IBusAdapter } from '../../src/interfaces';
+import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
 
 describe('Broker process', () => {
 
@@ -12,14 +13,7 @@ describe('Broker process', () => {
 
   beforeEach(() => {
     adapter = { publish(data: any, options?: any) { } }
-    brokerProcess = new BrokerProcess(<IBusAdapter>adapter);
-  });
-
-  it('should the broker process be initialized correctly', () => {
-    brokerProcess['getCid'] = function () { return this.cid; }
-    const cid = brokerProcess['getCid']();
-    cid.should.be.a.uuid('v4');
-    brokerProcess['getCid'] = null;
+    brokerProcess = new BrokerProcess(<IBusAdapter>adapter, new CraftsLoggerMock({}));
   });
 
   it('should start the process adding data inside broker process', () => {

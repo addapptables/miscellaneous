@@ -24,7 +24,7 @@ describe('redis bus adapter', function () {
         before(async () => {
             sandbox = sinon.createSandbox();
             sandbox.stub(loadPackage, 'loadPackage').returns(new Redis());
-            const adapter = new RedisBusAdapter(new CraftsLoggerMock());
+            const adapter = new RedisBusAdapter(new CraftsLoggerMock({}));
             adapter.setOptions({ url: 'redis://localhost:6379' });
             await adapter.onInit();
             redisAdapter = adapter;

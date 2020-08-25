@@ -28,7 +28,7 @@ describe('RabbitMQ Bus Adapter', () => {
 
     sandbox.stub(loadPackage, 'loadPackage').returns({ connect });
 
-    rabbitMQBusAdapter = new RabbitMQBusAdapter(new CraftsLoggerMock());
+    rabbitMQBusAdapter = new RabbitMQBusAdapter(new CraftsLoggerMock({}));
   });
 
   afterEach(() => {

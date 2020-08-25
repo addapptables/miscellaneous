@@ -5,13 +5,17 @@ import { IBusAdapter } from '../../interfaces';
 import { ITransferData } from '../../interfaces/transfer-data';
 import { TransferDataDto } from '../../interfaces/transfer-data-dto.interface';
 import { Broker } from './broker';
+import { CraftsLogger } from '../../logger/services/logger.service';
 
 export class BrokerProcess implements IBrokerStart, IBrokerAdd {
   private readonly cid: string;
 
   private data: ITransferData<TransferDataDto>;
 
-  constructor(private readonly adapter: IBusAdapter) {
+  constructor(
+    private readonly adapter: IBusAdapter,
+    private readonly logger: CraftsLogger
+  ) {
     this.cid = uuid.v4();
   }
 
@@ -23,8 +27,9 @@ export class BrokerProcess implements IBrokerStart, IBrokerAdd {
   end<T = any>(): Promise<ITransferData<T>> {
     const brokers = Broker.getInstance();
     return new Promise(async (resolve, reject) => {
+      const timeResult = setTimeout(() => { this.logger.warn(`Are you sure you have registered the handler ${this.data.context}-${this.data.action}?`, BrokerProcess.name) }, 2000);
       brokers.add(this.cid, (data: ITransferData<T>) => {
-        // TODO: add logger
+        clearTimeout(timeResult);
         try {
           if (!data.error) {
             return resolve(data);

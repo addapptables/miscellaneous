@@ -21,7 +21,7 @@ describe('nats bus adapter', () => {
     before(async () => {
         sandbox = sinon.createSandbox();
         sandbox.stub(loadPackage, 'loadPackage').returns(new Nats());
-        const adapter = new NatsBusAdapter(new CraftsLoggerMock());
+        const adapter = new NatsBusAdapter(new CraftsLoggerMock({}));
         adapter.setOptions({ url: 'nats://localhost:4222' });
         await adapter.onInit();
         natsAdapter = adapter;
