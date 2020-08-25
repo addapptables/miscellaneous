@@ -24,7 +24,7 @@ describe('mqtt bus adapter', function () {
         before(async () => {
             sandbox = sinon.createSandbox();
             sandbox.stub(loadPackage, 'loadPackage').returns(new Mqtt());
-            const adapter = new MqttBusAdapter(new CraftsLoggerMock());
+            const adapter = new MqttBusAdapter(new CraftsLoggerMock({}));
             adapter.setOptions({ brokerUrl: 'mqtt://localhost:1234' });
             await adapter.onInit();
             mqttAdapter = adapter;

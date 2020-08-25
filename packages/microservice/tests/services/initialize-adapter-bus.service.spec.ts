@@ -21,7 +21,7 @@ describe('Initialize Adapter Bus Service', () => {
 
     class TestModuleRef {
       resolve(type: Class<any>) {
-        return new type(new CraftsLoggerMock());
+        return new type(new CraftsLoggerMock({}));
       }
     }
 
@@ -45,7 +45,7 @@ describe('Initialize Adapter Bus Service', () => {
 
     class TestModuleRef {
       resolve(type: Class<any>) {
-        return new type(new CraftsLoggerMock());
+        return new type(new CraftsLoggerMock({}));
       }
     }
 
@@ -75,7 +75,7 @@ describe('Initialize Adapter Bus Service', () => {
 
     class TestModuleRef {
       resolve(type: Class<any>) {
-        return new type(new CraftsLoggerMock());
+        return new type(new CraftsLoggerMock({}));
       }
     }
 
@@ -105,7 +105,7 @@ describe('Initialize Adapter Bus Service', () => {
 
     class TestModuleRef {
       resolve(type: Class<any>) {
-        return new type(new CraftsLoggerMock());
+        return new type(new CraftsLoggerMock({}));
       }
     }
 
@@ -131,7 +131,7 @@ describe('Initialize Adapter Bus Service', () => {
   it('should throw BusConfigException by adapter config', async () => {
     class TestModuleRef {
       resolve(type: Class<any>) {
-        return new type(new CraftsLoggerMock());
+        return new type(new CraftsLoggerMock({}));
       }
     }
     const initializeAdapterBusInstance = new InitializeAdapterBus(<any>{}, new TestModuleRef() as ModuleRef);
@@ -146,7 +146,7 @@ describe('Initialize Adapter Bus Service', () => {
   it('should throw BusConfigException by adapter', async () => {
     class TestModuleRef {
       resolve(type: Class<any>) {
-        return new type(new CraftsLoggerMock());
+        return new type(new CraftsLoggerMock({}));
       }
     }
     const initializeAdapterBusOptions: MicroserviceOptions = {

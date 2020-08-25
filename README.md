@@ -1,9 +1,21 @@
+<p align="center">
+  <a href="http://addapptables.com/admin/dashboard" target="blank"><img src="http://addapptables.com/assets/images/logo/addaptables.svg" width="120" alt="Nest Logo" /></a>
+</p>
+
+  <p align="center">Addapptables microservices is a library for nodejs oriented to microservices with pattern design CQRS</p>
+    <p align="center">
+<a href="https://badge.fury.io/js/%40addapptables%2Fmicroservice"><img src="https://badge.fury.io/js/%40addapptables%2Fmicroservice.svg" alt="npm version" height="18"></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
+</p>
+
 # Addapptables microservices with cqrs
 
 - Addapptables microservices is a library for nodejs oriented to microservices,
 this library is made to work with [nestjs](https://docs.nestjs.com/)
 
-- [Example code](https://github.com/addapptables/example-service)
+- [Example code](https://github.com/addapptables/boilerplate)
 
 ## Getting Started
 To get started, let's install the package through npm:
@@ -18,8 +30,15 @@ npm i amqplib
 ```
 
 ## How to use
+- Available adapters:
+- KafkaBusAdapter
+- LocalBusAdapter (rx)
+- MqttBusAdapter
+- NatsBusAdapter
+- RabbitMQBusAdapter
+- RedisBusAdapter
 
-- Configuration rabbitmq
+- Example with rabbitmq
 ```typescript
 import { MicroserviceModule, ManagerAdapterBus, RabbitMQBusAdapter } from '@addapptables/microservice';
 @Module({
@@ -30,7 +49,10 @@ import { MicroserviceModule, ManagerAdapterBus, RabbitMQBusAdapter } from '@adda
         exchange: 'search-service',
         host: process.env.BUS_URL
       })
-      .build()
+      .build(),
+      logger: {
+        debug: false
+      }
     })
   ],
   controllers: [
@@ -73,6 +95,20 @@ export class CommandHandler implements ICommandHandler<ClassCommandModel> {
     }
 
 }
+
+// ChildModule
+@Module({
+  imports: [
+    ...
+  ],
+  controllers: [
+    ...
+  ],
+  providers: [
+    CommandHandler // very important
+  ],
+})
+export class ChildModule {}
 ```
 
 - Create query
@@ -102,6 +138,20 @@ export class FindOneUserHandler implements IQueryHandler<ClassQueryModel> {
   }
 
 }
+
+// ChildModule
+@Module({
+  imports: [
+    ...
+  ],
+  controllers: [
+    ...
+  ],
+  providers: [
+    FindOneUserHandler // very important
+  ],
+})
+export class ChildModule {}
 ```
 
 - Create events
@@ -130,6 +180,20 @@ export class ActionHandler implements IEventHandler<UserCreatedEvent> {
     }
 
 }
+
+// ChildModule
+@Module({
+  imports: [
+    ...
+  ],
+  controllers: [
+    ...
+  ],
+  providers: [
+    ActionHandler // very important
+  ],
+})
+export class ChildModule {}
 ```
 
 
