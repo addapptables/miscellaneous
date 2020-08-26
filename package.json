@@ -7,7 +7,8 @@
   "author": "dev@addapptables.com",
   "homepage": "https://github.com/addapptables/miscellaneous#readme",
   "scripts": {
-    "test": "nyc --require ts-node/register mocha packages/**/*.spec.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit"
+    "test": "nyc --require ts-node/register mocha packages/**/*.spec.ts --reporter=lcov --reporter=text --reporter=html --reporter=spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
     "@nestjs/common": "^7.0.11",
@@ -35,6 +36,7 @@
     "@types/sinon": "^9.0.4",
     "chai": "^4.2.0",
     "chai-uuid": "^1.0.6",
+    "coveralls": "^3.1.0",
     "lerna": "^3.21.0",
     "mocha": "^7.1.2",
     "nyc": "^15.0.1",
