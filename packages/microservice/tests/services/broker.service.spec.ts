@@ -10,6 +10,7 @@ import { Class } from '../../src/types';
 import { ModuleRef } from '@nestjs/core';
 import { Type } from '@nestjs/common';
 import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
+import { CraftsLogger } from '../../src/logger';
 
 describe('Broker manager', () => {
 
@@ -32,7 +33,7 @@ describe('Broker manager', () => {
     }
 
     resolve(type: Class<any>) {
-      return new type(new CraftsLoggerMock());
+      return new type(new CraftsLoggerMock({}));
     }
   }
 
@@ -44,7 +45,7 @@ describe('Broker manager', () => {
   };
 
   before(() => {
-    broker = new BrokerService();
+    broker = new BrokerService(new CraftsLoggerMock({}));
   });
 
   describe('should run life-cycle methods correctly', () => {

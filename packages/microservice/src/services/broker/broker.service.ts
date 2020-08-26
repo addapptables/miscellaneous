@@ -11,12 +11,13 @@ import { Broker } from './broker';
 import { BrokerProcess } from './broker-process';
 import { ITransferData } from '../../interfaces/transfer-data';
 import { TransferDataDto } from '../../interfaces/transfer-data-dto.interface';
+import { CraftsLogger } from '../../logger';
 
 @Injectable()
 export class BrokerService implements OnModuleDestroy {
   private adapterInstance: IBusAdapter;
 
-  constructor() {}
+  constructor(private readonly logger: CraftsLogger) {}
 
   async onInit(adapterInstance: IBusAdapter) {
     const config = {
@@ -40,7 +41,7 @@ export class BrokerService implements OnModuleDestroy {
   };
 
   start(): IBrokerStart {
-    const brokerProcess = new BrokerProcess(this.adapterInstance);
+    const brokerProcess = new BrokerProcess(this.adapterInstance, this.logger);
 
     return brokerProcess;
   }

@@ -13,7 +13,7 @@ describe('local bus adapter', () => {
     let localAdapter: LocalBusAdapter;
 
     before(() => {
-        localAdapter = new LocalBusAdapter(new CraftsLoggerMock());
+        localAdapter = new LocalBusAdapter(new CraftsLoggerMock({}));
         localAdapter.onInit();
     })
 

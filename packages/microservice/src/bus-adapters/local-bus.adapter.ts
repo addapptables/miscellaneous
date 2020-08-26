@@ -57,5 +57,6 @@ export class LocalBusAdapter implements IBusAdapter, IOnInit {
 
   close() {
     this.bus.complete();
+    this.bus = new Subject();
   }
 }

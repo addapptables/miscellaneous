@@ -1,11 +1,14 @@
 {
   "name": "root",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "license": "MIT",
   "description": "addapptables microservice",
   "author": "dev@addapptables.com",
   "homepage": "https://github.com/addapptables/miscellaneous#readme",
+  "scripts": {
+    "test": "nyc --require ts-node/register mocha packages/**/*.spec.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit"
+  },
   "dependencies": {
     "@nestjs/common": "^7.0.11",
     "@nestjs/core": "^7.0.11",
@@ -21,6 +24,7 @@
     "uuid": "^8.0.0"
   },
   "devDependencies": {
+    "@nestjs/testing": "^7.4.2",
     "@types/bluebird": "^3.5.32",
     "@types/chai": "4.2.11",
     "@types/chai-uuid": "^1.0.1",

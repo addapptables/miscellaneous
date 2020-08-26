@@ -24,7 +24,7 @@ describe('kafka bus adapter', function () {
         before(async () => {
             sandbox = sinon.createSandbox();
             sandbox.stub(loadPackage, 'loadPackage').returns({ Kafka });
-            const adapter = new KafkaBusAdapter(new CraftsLoggerMock());
+            const adapter = new KafkaBusAdapter(new CraftsLoggerMock({}));
             await adapter.onInit();
             kafkaAdapter = adapter;
         })
