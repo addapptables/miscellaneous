@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="http://addapptables.com/admin/dashboard" target="blank"><img src="http://addapptables.com/assets/images/logo/addaptables.svg" width="120" alt="Nest Logo" /></a>
+  <a href="http://addapptables.com/admin/dashboard" target="blank"><img src="http://https://ui.addapptables.com/assets/images/logo/addaptables.svg" width="120" alt="Addapptables logo" /></a>
 </p>
 
   <p align="center">Addapptables microservices is a library for nodejs oriented to microservices with pattern design CQRS</p>

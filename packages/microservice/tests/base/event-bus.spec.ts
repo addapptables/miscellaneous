@@ -10,7 +10,7 @@ import { MICROSERVICE_CONFIG_PROVIDER } from '../../src/config/constants.config'
 import { IBusAdapter, IEventHandler } from '../../src/interfaces';
 import { ITransferData } from '../../src/interfaces/transfer-data';
 import { TransferDataDto } from '../../src/interfaces/transfer-data-dto.interface';
-import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
+import { CraftsLogger } from '../../src';
 
 describe('Event Bus', () => {
   const sandbox = sinon.createSandbox();
@@ -44,7 +44,7 @@ describe('Event Bus', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      providers: [EventBus, TestEventHandler, ExplorerService, configProvider, TestBusAdapter, { provide: 'CraftsLogger', useClass: CraftsLoggerMock }],
+      providers: [EventBus, TestEventHandler, ExplorerService, configProvider, TestBusAdapter, CraftsLogger],
     }).compile();
 
     eventBus = module.get<EventBus>(EventBus);

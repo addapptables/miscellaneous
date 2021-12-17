@@ -40,7 +40,7 @@ describe('mqtt bus adapter', function () {
                 await mqttAdapter.subscribe(async (result) => {
                     try {
                         chai.expect(result.context).to.be.equal(testData.context);
-                        resolve();
+                        resolve(undefined);
                     } catch (error) {
                         reject(error);
                     }

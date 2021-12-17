@@ -1,4 +1,4 @@
-import { fromEvent, merge } from 'rxjs';
+import { firstValueFrom, fromEvent, merge } from 'rxjs';
 import { map, first } from 'rxjs/operators';
 import { IBusAdapter } from '../interfaces/bus/bus-adapter.interface';
 import { IOnInit } from '../interfaces/lifecycles';
@@ -44,7 +44,7 @@ export class MqttBusAdapter implements IBusAdapter, IOnInit, ISetOptions {
         throw error;
       })
     );
-    await merge(onConnect, onError).pipe(first()).toPromise();
+    await firstValueFrom(merge(onConnect, onError).pipe(first()));
     this.listenMessages();
   }
 
