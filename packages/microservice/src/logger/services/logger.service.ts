@@ -1,10 +1,10 @@
-import { Injectable, Scope, Logger } from '@nestjs/common';
+import { Injectable, Scope, ConsoleLogger } from '@nestjs/common';
 import { MicroserviceOptions } from '../../interfaces/microservice-options.interface';
 import { MICROSERVICE_CONFIG_PROVIDER } from '../../config/constants.config';
 import { ModuleRef } from '@nestjs/core';
 
 @Injectable({ scope: Scope.TRANSIENT })
-export class CraftsLogger extends Logger {
+export class CraftsLogger extends ConsoleLogger {
 
   public readonly configuration: MicroserviceOptions;
 

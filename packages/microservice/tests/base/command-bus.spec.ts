@@ -9,7 +9,7 @@ import { MICROSERVICE_CONFIG_PROVIDER } from '../../src/config/constants.config'
 import { IBusAdapter, ICommandHandler } from '../../src/interfaces';
 import { ITransferData } from '../../src/interfaces/transfer-data';
 import { TransferDataDto } from '../../src/interfaces/transfer-data-dto.interface';
-import { CraftsLoggerMock } from '../mocks/crafts-logger.mock';
+import { CraftsLogger } from '../../src/logger/services/logger.service';
 
 describe('Command  Bus', () => {
   const sandbox = sinon.createSandbox();
@@ -43,7 +43,7 @@ describe('Command  Bus', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      providers: [CommandBus, TestCommandHandler, ExplorerService, configProvider, TestBusAdapter, { provide: 'CraftsLogger', useClass: CraftsLoggerMock }],
+      providers: [CommandBus, TestCommandHandler, ExplorerService, configProvider, TestBusAdapter, CraftsLogger],
     }).compile();
 
     commandBus = module.get<CommandBus>(CommandBus);

@@ -40,7 +40,7 @@ describe('redis bus adapter', function () {
                 await redisAdapter.subscribe(async (result) => {
                     try {
                         chai.expect(result.context).to.be.equal(testData.context);
-                        resolve();
+                        resolve(undefined);
                     } catch (error) {
                         reject(error);
                     }

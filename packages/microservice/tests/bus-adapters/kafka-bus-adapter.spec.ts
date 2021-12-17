@@ -39,7 +39,7 @@ describe('kafka bus adapter', function () {
                 await kafkaAdapter.subscribe(async (result) => {
                     try {
                         chai.expect(result.context).to.be.equal(testData.context);
-                        resolve();
+                        resolve(undefined);
                     } catch (error) {
                         reject(error);
                     }
