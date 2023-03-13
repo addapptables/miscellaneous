@@ -33,11 +33,11 @@ export class BrokerService implements OnModuleDestroy {
   private subscribe = async (data: ITransferData<TransferDataDto>) => {
     const brokers = Broker.getInstance();
     const handle = brokers.get(data.cid);
+    brokers.delete(data.cid);
     if (typeof handle !== 'function') {
       return;
     }
     await handle(data);
-    brokers.delete(data.cid);
   };
 
   start(): IBrokerStart {
