@@ -22,7 +22,7 @@ export class CommandBus extends Bus {
     super(moduleRef);
   }
 
-  publish(data: ICommand<ICommandDto>): any {
+  publish(data: ICommand<ICommandDto>): Promise<void> | void {
     return this.adapter.publish(data);
   }
 

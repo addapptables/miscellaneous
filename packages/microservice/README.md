@@ -67,6 +67,24 @@ import { MicroserviceModule, ManagerAdapterBus, RabbitMQBusAdapter } from '@adda
 export class AppModule {}
 ```
 
+- Example with local adapter and sequential processing
+```typescript
+import { MicroserviceModule, ManagerAdapterBus, LocalBusAdapter } from '@addapptables/microservice';
+
+@Module({
+  imports: [
+    MicroserviceModule.withConfig({
+      adapter: ManagerAdapterBus.getInstance(LocalBusAdapter)
+        .withConfig({
+          sequentialProcessing: true
+        })
+        .build()
+    })
+  ]
+})
+export class AppModule {}
+```
+
 - Create commands
 
 ```typescript

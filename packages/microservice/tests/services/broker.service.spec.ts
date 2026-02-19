@@ -24,7 +24,7 @@ describe('Broker manager', () => {
 
   class TestModuleRef extends ModuleRef {
 
-    get<TInput = any, TResult = TInput>(typeOrToken: string | symbol | Type<TInput>, options?: { strict: boolean; }): TResult {
+    get<TInput = any, TResult = TInput>(typeOrToken: string | symbol | Type<TInput>, options?: any): TResult {
       throw new Error('Method not implemented.');
     }
 
