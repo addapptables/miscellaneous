@@ -21,6 +21,15 @@ describe('local bus adapter', () => {
         localAdapter.close();
     })
 
+    it('Should keep singleton instance when creating a new adapter', () => {
+        const secondInstance = new LocalBusAdapter(new CraftsLoggerMock({}));
+        chai.expect(secondInstance).to.be.equal(localAdapter);
+    })
+
+    it('Should support setOptions without params', () => {
+        chai.expect(() => localAdapter.setOptions()).to.not.throw();
+    })
+
     describe('Subscribe', () => {
         it('Should be equal to test-context', (done) => {
             localAdapter.subscribe((result) => {
@@ -69,6 +78,71 @@ describe('local bus adapter', () => {
                 }
             }, data);
             localAdapter.publish(data);
+        })
+
+        it('Should process one by one when sequential processing is enabled', (done) => {
+            const data = { ...testData, action: 'sequential-action', context: 'sequential-context' };
+            const executionOrder = [];
+            let processed = 0;
+
+            localAdapter.setOptions({ sequentialProcessing: true });
+
+            localAdapter.subscribe(async (result) => {
+                executionOrder.push(`start-${result.data.id}`);
+                await new Promise((resolve) => setTimeout(resolve, 20));
+                executionOrder.push(`end-${result.data.id}`);
+                processed++;
+
+                if (processed === 3) {
+                    chai.expect(executionOrder).to.be.deep.equal([
+                        'start-1',
+                        'end-1',
+                        'start-2',
+                        'end-2',
+                        'start-3',
+                        'end-3'
+                    ]);
+                    localAdapter.setOptions({ sequentialProcessing: false });
+                    done();
+                }
+            }, data);
+
+            localAdapter.publish({ ...data, data: { id: '1' } });
+            localAdapter.publish({ ...data, data: { id: '2' } });
+            localAdapter.publish({ ...data, data: { id: '3' } });
+        })
+
+        it('Should not run handles concurrently across subscriptions when sequential processing is enabled', (done) => {
+            const data = {
+                ...testData,
+                action: 'sequential-global-action',
+                context: 'sequential-global-context',
+            };
+            let running = 0;
+            let maxRunning = 0;
+            let processed = 0;
+
+            localAdapter.setOptions({ sequentialProcessing: true });
+
+            const createHandler = () => async () => {
+                running++;
+                maxRunning = Math.max(maxRunning, running);
+                await new Promise((resolve) => setTimeout(resolve, 20));
+                running--;
+                processed++;
+
+                if (processed === 4) {
+                    chai.expect(maxRunning).to.be.equal(1);
+                    localAdapter.setOptions({ sequentialProcessing: false });
+                    done();
+                }
+            };
+
+            localAdapter.subscribe(createHandler(), data);
+            localAdapter.subscribe(createHandler(), data);
+
+            localAdapter.publish({ ...data, data: { id: '1' } });
+            localAdapter.publish({ ...data, data: { id: '2' } });
         })
     })
 });

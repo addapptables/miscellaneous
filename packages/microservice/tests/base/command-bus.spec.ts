@@ -93,5 +93,16 @@ describe('Command  Bus', () => {
     chai.expect(publish.calledOnce).to.be.true;
   });
 
+  it('should not subscribe when handler instance is not found', () => {
+    const subscribeSpy = sandbox.spy(module.get<any>(CommandBus)['adapter'], 'subscribe');
+    const debugSpy = sandbox.spy(module.get<any>(CommandBus)['logger'], 'debug');
+    class NonRegisteredHandler {}
+    try {
+      commandBus['registerHandler'](NonRegisteredHandler as any);
+    } catch (e) {}
+    chai.expect(subscribeSpy.called).to.be.false;
+    chai.expect(debugSpy.called).to.be.false;
+  });
+
 });
 

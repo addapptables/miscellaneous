@@ -22,7 +22,7 @@ export class QueryBus extends Bus {
     super(moduleRef);
   }
 
-  publish(data: IQuery<IQueryDto>): any {
+  publish(data: IQuery<IQueryDto>): Promise<void> | void {
     return this.adapter.publish(data);
   }
 

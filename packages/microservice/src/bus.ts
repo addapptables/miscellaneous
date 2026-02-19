@@ -22,7 +22,9 @@ export abstract class Bus implements OnModuleDestroy {
     this.microserviceOptions = this.moduleRef.get(MICROSERVICE_CONFIG_PROVIDER);
   }
 
-  abstract publish(data: ITransferData<TransferDataDto>): any;
+  abstract publish(
+    data: ITransferData<TransferDataDto>
+  ): Promise<void> | void;
 
   protected abstract registerHandlers(): void;
 
@@ -52,6 +54,10 @@ export abstract class Bus implements OnModuleDestroy {
     this.adapter = adapterInstance;
   }
 
+  protected adapterSubscribeOptions(): { sequential: boolean } {
+    return { sequential: false };
+  }
+
   protected registerHandler = (handler: Class<IHandler>): void => {
     const instance: IHandler = this.moduleRef.get(handler, { strict: false });
 
@@ -61,7 +67,7 @@ export abstract class Bus implements OnModuleDestroy {
 
     const Target = this.reflectName(handler);
     const data = new Target();
-    this.adapter.subscribe(this.subscribe(instance), data);
+    this.adapter.subscribe(this.subscribe(instance), data, this.adapterSubscribeOptions());
     this.logger.debug({ data }, 'RegisterHandler');
   };
 

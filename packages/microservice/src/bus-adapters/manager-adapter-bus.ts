@@ -1,9 +1,15 @@
 import { Class } from '../types';
 import { IBusAdapter, IEvent, IEventDto } from '../interfaces';
+import { ISetOptions } from '../interfaces/set-options.interface';
 
-export interface IManagerAdapterBusWithConfig<T = any> {
-  withConfig(config: T): IManagerAdapterBusBuild;
-  build(): IAdapterBusConfig;
+type AdapterConfigOf<TAdapter extends Class<IBusAdapter>> =
+  InstanceType<TAdapter> extends ISetOptions<infer TConfig>
+  ? TConfig
+  : any;
+
+export interface IManagerAdapterBusWithConfig<TConfig = any> {
+  withConfig(config: TConfig): IManagerAdapterBusBuild<TConfig>;
+  build(): IAdapterBusConfig<TConfig | undefined>;
 }
 
 export interface IAdapterBusSagaConfig<T = any> {
@@ -11,35 +17,35 @@ export interface IAdapterBusSagaConfig<T = any> {
   events: Class<IEvent<IEventDto>>[];
 }
 
-export interface IAdapterBusConfig<T = any> {
+export interface IAdapterBusConfig<TConfig = any> {
   adapterPrototype: Class<IBusAdapter>;
-  adapterConfig: T;
+  adapterConfig: TConfig;
 }
 
-export interface IManagerAdapterBusBuild {
-  build(): IAdapterBusConfig;
+export interface IManagerAdapterBusBuild<TConfig = any> {
+  build(): IAdapterBusConfig<TConfig | undefined>;
 }
 
-export class ManagerAdapterBus<T = any>
+export class ManagerAdapterBus<TConfig = any>
   implements
-    IManagerAdapterBusWithConfig<T>,
-    IManagerAdapterBusBuild {
-  private adapterConfig: T;
+  IManagerAdapterBusWithConfig<TConfig>,
+  IManagerAdapterBusBuild<TConfig> {
+  private adapterConfig: TConfig | undefined;
 
   private constructor(private readonly prototype: Class<IBusAdapter>) {}
 
-  static getInstance<T = any>(
-    prototype: Class<IBusAdapter>
-  ): IManagerAdapterBusWithConfig {
-    return new ManagerAdapterBus<T>(prototype);
+  static getInstance<TAdapter extends Class<IBusAdapter>>(
+    prototype: TAdapter
+  ): IManagerAdapterBusWithConfig<AdapterConfigOf<TAdapter>> {
+    return new ManagerAdapterBus<AdapterConfigOf<TAdapter>>(prototype);
   }
 
-  withConfig(config: T): IManagerAdapterBusBuild {
+  withConfig(config: TConfig): IManagerAdapterBusBuild<TConfig> {
     this.adapterConfig = config;
     return this;
   }
 
-  build(): IAdapterBusConfig {
+  build(): IAdapterBusConfig<TConfig | undefined> {
     return {
       adapterPrototype: this.prototype,
       adapterConfig: this.adapterConfig

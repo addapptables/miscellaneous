@@ -42,6 +42,11 @@ describe('Event Bus', () => {
     },
   };
 
+  const configProviderNoAdapter = {
+    provide: MICROSERVICE_CONFIG_PROVIDER,
+    useValue: {},
+  };
+
   beforeEach(async () => {
     module = await Test.createTestingModule({
       providers: [EventBus, TestEventHandler, ExplorerService, configProvider, TestBusAdapter, CraftsLogger],
@@ -90,6 +95,23 @@ describe('Event Bus', () => {
 
     chai.expect(handle.calledOnce).to.be.true;
     chai.expect(handle.getCall(0).args[0]).deep.equal(data);
+  });
+
+  it('should return sequential false when adapterConfig is undefined', () => {
+    const options = eventBus['adapterSubscribeOptions']();
+    chai.expect(options.sequential).to.be.false;
+  });
+
+  it('should return sequential false when microserviceOptions is empty', async () => {
+    const moduleEmpty = await Test.createTestingModule({
+      providers: [EventBus, TestEventHandler, ExplorerService, configProviderNoAdapter, TestBusAdapter, CraftsLogger],
+    }).compile();
+
+    const eventBusEmpty = moduleEmpty.get<EventBus>(EventBus);
+    await eventBusEmpty.onInit(<any>{subscribe: () => {}, close: () => {}, publish: () => {}});
+    const options = eventBusEmpty['adapterSubscribeOptions']();
+    chai.expect(options.sequential).to.be.false;
+    await moduleEmpty.close();
   });
 
 });

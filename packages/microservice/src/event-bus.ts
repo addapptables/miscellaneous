@@ -19,7 +19,7 @@ export class EventBus extends Bus {
     super(moduleRef);
   }
 
-  publish(data: IEvent<IEventDto>): any {
+  publish(data: IEvent<IEventDto>): Promise<void> | void {
     return this.adapter.publish(data);
   }
 
@@ -30,6 +30,10 @@ export class EventBus extends Bus {
 
   protected reflectName(handler: Type<IEventHandler<IEvent<IEventDto>>>): Class<IEvent<IEventDto>> {
     return Reflect.getMetadata(EVENT_HANDLER_METADATA, handler);
+  }
+
+  protected adapterSubscribeOptions(): { sequential: boolean } {
+    return { sequential: this.microserviceOptions?.adapter?.adapterConfig?.sequentialProcessing ?? false };
   }
 
   protected subscribe = (handle: IHandler<any>): (data: any) => Promise<any> => async (data: any): Promise<any> => {
