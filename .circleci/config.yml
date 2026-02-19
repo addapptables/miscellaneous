@@ -12,7 +12,7 @@ jobs:
   test:
     working_directory: ~/crafts
     docker:
-      - image: cimg/node:22
+      - image: cimg/node:lts
     steps:
       - checkout
       - restore_cache:
